@@ -1,0 +1,32 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping/doctrine-mapping.xsd">
+
+    <entity name="App\News\Domain\Category" table="category">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="title" type="string" length="255"/>
+        <field name="createdAt" type="datetime" column="created_at"/>
+        <field name="updatedAt" type="datetime" column="updated_at"/>
+        <field name="deletedAt" type="datetime" column="deleted_at" nullable="true"/>
+
+        <!-- Many-to-Many relationship with Article -->
+        <many-to-many field="articles" target-entity="App\News\Domain\Article">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="article_category">
+                <join-columns>
+                    <join-column name="category_id" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="article_id" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+
+</doctrine-mapping>

@@ -1,0 +1,22 @@
+App\News\Domain\Entity\User:
+  type: entity
+  table: user
+  id:
+    id:
+      type: integer
+      column: id
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    email:
+      type: string
+      length: 180
+      nullable: false
+    roles:
+      type: json
+      nullable: false
+    password:
+      type: string
+      length: 255
+      nullable: false

@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    images_directory: '%kernel.project_dir%/public/uploads/images'
+    app.recipient_email: 'recipient@example.com'
 
 services:
     # default configuration for services in *this* file
@@ -17,8 +19,76 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
+            - '../src/News/Domain/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Domain\Validator\Constraints\CategoryIDsValidator:
+        arguments:
+            - '@App\News\Infrastructure\Repository\CategoryRepository'
+        tags:
+            - { name: 'validator.constraint_validator', alias: 'category_ids_validator' }
+
+    App\Domain\Validator\Constraints\ImageIDValidator:
+        arguments:
+            - '@App\News\Infrastructure\Repository\ImageRepository'
+        tags:
+            - { name: 'validator.constraint_validator', alias: 'image_id_validator' }
+
+    command_handlers:
+        namespace: App\News\Application\Command\Handler\
+        resource: '%kernel.project_dir%/src/News/Application/Command/Handler/*Handler.php'
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    App\News\Application\Command\Handler\CreateImageHandler:
+        arguments:
+            $imagesDirectory: '%images_directory%'
+            $slugger: '@slugger'
+            $imageRepository: '@App\News\Domain\Repository\ImageRepositoryInterface'
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    query_handlers:
+        namespace: App\News\Application\Query\Handler\
+        resource: '%kernel.project_dir%/src/News/Application/Query/Handler/*Handler.php'
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    App\News\Infrastructure\Repository\ArticleRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\News\Domain\Repository\ArticleRepositoryInterface:
+        alias: App\News\Infrastructure\Repository\ArticleRepository
+
+    App\News\Infrastructure\Repository\CategoryRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\News\Domain\Repository\CategoryRepositoryInterface:
+        alias: App\News\Infrastructure\Repository\CategoryRepository
+
+    App\News\Infrastructure\Repository\CommentRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\News\Domain\Repository\CommentRepositoryInterface:
+        alias: App\News\Infrastructure\Repository\CommentRepository
+
+    App\News\Infrastructure\Repository\ImageRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\News\Domain\Repository\ImageRepositoryInterface:
+        alias: App\News\Infrastructure\Repository\ImageRepository
+
+    App\News\Interface\Cli\SendTopWeeklyArticlesCommand:
+        arguments:
+            $recipientEmail: '%env(RECIPIENT_EMAIL)%'
+        tags:
+            - { name: 'console.command' }

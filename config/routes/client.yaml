@@ -1,0 +1,34 @@
+# Route for getting article by ID
+get_article_by_id:
+  path: /api/article/{article_id}
+  controller: App\News\Interface\Http\Client\Controller\ArticleController::getArticleById
+  methods: ['GET']
+
+# Route for getting articles by category and page
+get_articles:
+  path: /api/category/{category_id}/articles/{page_id<\d+>?0}
+  controller: App\News\Interface\Http\Client\Controller\ArticleController::getArticlesByCategory
+  methods: ['GET']
+
+# Route for getting top news
+get_top_news:
+  path: /api/top-news
+  controller: App\News\Interface\Http\Client\Controller\CategoryController::getTopNews
+  methods: ['GET']
+
+# Route for getting comments of an article by ID
+get_comments:
+  path: /api/article/{article_id}/comments
+  controller: App\News\Interface\Http\Client\Controller\CommentController::getComments
+  methods: ['GET']
+
+# Route for posting a comment to an article by ID
+post_comment:
+  path: /api/article/{article_id}/comments
+  controller: App\News\Interface\Http\Client\Controller\CommentController::postComment
+  methods: ['POST']
+
+login:
+  path: /api/login
+  controller: App\Controller\Api\AuthController::login
+  methods: POST

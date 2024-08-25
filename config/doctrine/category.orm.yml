@@ -1,0 +1,27 @@
+App\News\Domain\Category:
+  type: entity
+  table: category
+  id:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    title:
+      type: string
+      length: 255
+    createdAt:
+      type: datetime
+      column: created_at
+    updatedAt:
+      type: datetime
+      column: updated_at
+    deletedAt:
+      type: datetime
+      column: deleted_at
+      nullable: true
+  manyToMany:
+    articles:
+      targetEntity: App\News\Domain\Article
+      mappedBy: categories

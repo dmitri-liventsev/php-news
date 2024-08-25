@@ -1,0 +1,51 @@
+App\News\Domain\Article:
+  type: entity
+  table: article
+  id:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    title:
+      type: string
+      length: 255
+    shortDescription:
+      type: string
+      length: 500
+      column: short_description
+    content:
+      type: text
+    numberOfViews:
+      type: integer
+      column: number_of_views
+    createdAt:
+      type: datetime
+      column: created_at
+    updatedAt:
+      type: datetime
+      column: updated_at
+    deletedAt:
+      type: datetime
+      column: deleted_at
+      nullable: true
+  manyToOne:
+    image:
+      targetEntity: App\News\Domain\Image
+      inversedBy: articles
+      joinColumn:
+        name: image_id
+        referencedColumnName: id
+  manyToMany:
+    categories:
+      targetEntity: App\News\Domain\Category
+      inversedBy: articles
+      joinTable:
+        name: article_category
+        joinColumns:
+          article_id:
+            referencedColumnName: id
+        inverseJoinColumns:
+          category_id:
+            referencedColumnName: id

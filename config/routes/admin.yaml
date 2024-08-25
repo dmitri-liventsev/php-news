@@ -1,0 +1,77 @@
+# Route for getting an article by ID
+admin_view_article:
+  path: /admin/api/article/{article_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::getArticle
+  methods: ['GET']
+
+# Route for getting a list of articles with pagination
+admin_list_articles:
+  path: /admin/api/articles/{page_id<\d+>?0}
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::getArticles
+  methods: ['GET']
+
+# Route for creating a new article
+admin_create_article:
+  path: /admin/api/article
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::createArticle
+  methods: ['POST']
+
+# Route for updating an existing article
+admin_update_article:
+  path: /admin/api/article/{article_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::updateArticle
+  methods: ['PUT']
+
+# Route for deleting an article
+admin_delete_article:
+  path: /admin/api/article/{article_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::deleteArticle
+  methods: ['DELETE']
+
+# Route for uploading an article image
+admin_upload_article_image:
+  path: /admin/api/articles/image/upload
+  controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::uploadImage
+  methods: ['POST']
+
+# Route for getting a category by ID
+get_category:
+  path: /admin/api/category/{category_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminCategoryController::getCategory
+  methods: ['GET']
+
+# Route for getting all categories
+get_categories:
+  path: /admin/api/category
+  controller: App\News\Interface\Http\Admin\Controller\AdminCategoryController::getCategories
+  methods: ['GET']
+
+# Route for creating a new category
+create_category:
+  path: /admin/api/category
+  controller: App\News\Interface\Http\Admin\Controller\AdminCategoryController::createCategory
+  methods: ['POST']
+
+# Route for updating an existing category
+update_category:
+  path: /admin/api/category/{category_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminCategoryController::updateCategory
+  methods: ['PUT']
+
+# Route for deleting a category
+delete_category:
+  path: /admin/api/category/{category_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminCategoryController::deleteCategory
+  methods: ['DELETE']
+
+# Route for getting comments by article ID
+get_comments_by_article:
+  path: /admin/api/article/{article_id}/comments
+  controller: App\News\Interface\Http\Admin\Controller\AdminCommentController::getCommentsByArticle
+  methods: ['GET']
+
+# Route for deleting a comment by ID
+delete_comment:
+  path: /admin/api/comment/{comment_id}
+  controller: App\News\Interface\Http\Admin\Controller\AdminCommentController::deleteComment
+  methods: ['DELETE']

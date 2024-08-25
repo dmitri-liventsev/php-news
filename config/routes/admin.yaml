@@ -16,6 +16,11 @@ admin_create_article:
   controller: App\News\Interface\Http\Admin\Controller\AdminArticleController::createArticle
   methods: ['POST']
 
+login:
+  path: /admin/api/login
+  controller: App\Controller\Api\AuthController::login
+  methods: POST
+
 # Route for updating an existing article
 admin_update_article:
   path: /admin/api/article/{article_id}

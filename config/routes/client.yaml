@@ -27,8 +27,3 @@ post_comment:
   path: /api/article/{article_id}/comments
   controller: App\News\Interface\Http\Client\Controller\CommentController::postComment
   methods: ['POST']
-
-login:
-  path: /api/login
-  controller: App\Controller\Api\AuthController::login
-  methods: POST

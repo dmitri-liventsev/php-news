@@ -59,6 +59,6 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
             ->where('a.isTop = :isTop')
             ->setParameter('isTop', true)
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
     }
 }

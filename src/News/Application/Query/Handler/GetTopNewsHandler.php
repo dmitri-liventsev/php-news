@@ -17,20 +17,6 @@ class GetTopNewsHandler
 
     public function __invoke(GetTopNewsQuery $query): array
     {
-        $categoriesWithArticles = $this->categoryRepository->findCategoriesWithTopArticles(3);
-
-        $result = [];
-
-        foreach ($categoriesWithArticles as $categoryId => $data) {
-            $category = $this->categoryRepository->find($categoryId);
-            if ($category) {
-                $result[] = [
-                    'category' => $category,
-                    'articles' => $data['articles']
-                ];
-            }
-        }
-
-        return $result;
+        return $this->categoryRepository->findCategoriesWithTopArticles(3);
     }
 }

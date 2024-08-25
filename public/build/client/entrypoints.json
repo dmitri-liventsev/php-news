@@ -1,0 +1,10 @@
+{
+  "entrypoints": {
+    "client": {
+      "js": [
+        "/build/client/runtime.js",
+        "/build/client/client.js"
+      ]
+    }
+  }
+}

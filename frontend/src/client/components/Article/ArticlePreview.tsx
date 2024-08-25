@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { Article } from './index';
 import {Property} from "csstype";
+import {Link} from "react-router-dom";
 
 interface Props {
     article: Article;
@@ -10,6 +11,16 @@ interface Props {
 }
 
 const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' }) => {
+    const titleLink = (<Link to={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Typography gutterBottom variant="h5" component="div">
+            {article.title}
+        </Typography>
+    </Link>);
+
+    const shortDescription = (<Typography variant="body2" color="text.secondary">
+        {article.shortDescription}
+    </Typography>);
+
     return (
         <>
             {direction === 'row' ? (
@@ -21,12 +32,8 @@ const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' 
                         alt={article.title}
                     />
                     <CardContent sx={{ flex: 1 }}>
-                        <Typography gutterBottom variant="h5" component="div">
-                            {article.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {article.shortDescription}
-                        </Typography>
+                        {titleLink}
+                        {shortDescription}
                     </CardContent>
                 </Card>
             ) : (
@@ -38,12 +45,8 @@ const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' 
                         alt={article.title}
                     />
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                            {article.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {article.shortDescription}
-                        </Typography>
+                        {titleLink}
+                        {shortDescription}
                     </CardContent>
                 </Card>
             )}

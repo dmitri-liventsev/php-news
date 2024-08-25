@@ -6,18 +6,18 @@ import {fetchNews} from "../../features/news/newsSlice"; // Импорт инт�
 
 const TopNews: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { news, loading, error } = useSelector((state: RootState) => state.news);
+    const { topNews } = useSelector((state: RootState) => state.news);
 
     useEffect(() => {
         dispatch(fetchNews());
     }, [dispatch]);
 
-    if (loading) return <h4>Loading...</h4>;
-    if (error) return <div>Error: {error}</div>;
+    if (topNews.loading) return <h4>Loading...</h4>;
+    if (topNews.error) return <div>Error: {topNews.error}</div>;
 
     return (
         <div>
-            {news.map(category => (
+            {topNews.categories.map(category => (
                 <CategoryPreview key={category.id} category={category} />
             ))}
         </div>

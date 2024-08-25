@@ -12,19 +12,23 @@ import ArticlePreview from "../Article/ArticlePreview";
 const Category: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
     const categoryIdInt = Number(categoryId)
-    const dispatch = useDispatch<AppDispatch>(); // Типизация dispatch
-    const { categoryArticles, loading, error } = useSelector(
+    const dispatch = useDispatch<AppDispatch>();
+    const { categoryArticles } = useSelector(
         (state: RootState) => state.news || { articles: [], category: null, hasMore: true, page: 1 }
     );
 
     let articles = [] as Article[];
     let category = {} as CategoryPreview;
     let currentPage = 1;
+    let loading = true;
+    let error = null;
 
     if ( categoryArticles[categoryIdInt]) {
         articles = categoryArticles[categoryIdInt].articles;
         category = categoryArticles[categoryIdInt].category;
         currentPage = categoryArticles[categoryIdInt].currentPage;
+        loading = categoryArticles[categoryIdInt].loading;
+        error = categoryArticles[categoryIdInt].error;
     }
 
     useEffect(() => {
@@ -39,6 +43,8 @@ const Category: React.FC = () => {
         }
     };
 
+    if (error) return <div>Error: {error}</div>;
+
     return (
         <div>
             <h1>{category.title}</h1>
@@ -46,17 +52,14 @@ const Category: React.FC = () => {
                 dataLength={articles.length}
                 next={fetchMoreData}
                 hasMore={articles.length / (currentPage-1) >= 10}
-                loader={<h4>Loading...</h4>}
-                endMessage={
-                    <p style={{ textAlign: 'center' }}>
-                        <b>Yay! You have seen it all</b>
-                    </p>
-                }
+                loader={<></>}
             >
                 {articles.map(article => (
                     <ArticlePreview key={article.id} article={article} direction={"row"}/>
                 ))}
             </InfiniteScroll>
+
+            {loading  && (<h4>Loading...</h4>)}
         </div>
     );
 };

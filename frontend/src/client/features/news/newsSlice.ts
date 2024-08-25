@@ -11,18 +11,24 @@ interface ArticlesByCategoryState {
     error: string | null;
 }
 
-interface NewsState {
-    news: Category[];
-    categoryArticles: Record<number, ArticlesByCategoryState>;
+interface TopNews {
+    categories: Category[];
     loading: boolean;
     error: string | null;
 }
 
+interface NewsState {
+    categoryArticles: Record<number, ArticlesByCategoryState>;
+    topNews: TopNews
+}
+
 const initialState: NewsState = {
-    news: [],
     categoryArticles: {},
-    loading: false,
-    error: null,
+    topNews: {
+        categories: [],
+        loading: true,
+        error: null
+    } as TopNews,
 };
 
 export const fetchNews = createAsyncThunk<Category[]>(
@@ -71,16 +77,16 @@ const newsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchNews.pending, (state) => {
-                state.loading = true;
-                state.error = null;
+                state.topNews.loading = true;
+                state.topNews.error = null;
             })
             .addCase(fetchNews.fulfilled, (state, action) => {
-                state.loading = false;
-                state.news = action.payload;
+                state.topNews.loading = false;
+                state.topNews.categories = action.payload;
             })
             .addCase(fetchNews.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || 'An unknown error occurred';
+                state.topNews.loading = false;
+                state.topNews.error = action.error.message || 'An unknown error occurred';
             })
 
 

@@ -4,7 +4,7 @@ namespace App\News\Infrastructure\Repository;
 
 use App\News\Domain\Entity\Image;
 use App\News\Domain\Repository\ImageRepositoryInterface;
-use App\News\Domain\Validator\Constraints\ImageID;
+use App\News\Domain\ValueObject\ImageID;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

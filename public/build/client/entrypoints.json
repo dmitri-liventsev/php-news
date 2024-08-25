@@ -4,6 +4,9 @@
       "js": [
         "/build/client/runtime.js",
         "/build/client/client.js"
+      ],
+      "css": [
+        "/build/client/client.css"
       ]
     }
   }

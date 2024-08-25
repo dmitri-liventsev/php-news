@@ -16,6 +16,13 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
         parent::__construct($registry, Category::class);
     }
 
+    public function findById(CategoryID $categoryID): ?Category {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $categoryID->getValue())
+            ->getQuery()->getOneOrNullResult();
+    }
+
     /**
      * @param array $ids
      * @return Category[]
@@ -55,7 +62,9 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
     {
         return $this->createQueryBuilder('c')
             ->leftJoin('c.articles', 'a')
+            ->leftJoin('a.image', 'i')
             ->addSelect('a')
+            ->addSelect('i')
             ->where('a.isTop = :isTop')
             ->setParameter('isTop', true)
             ->getQuery()

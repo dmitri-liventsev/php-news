@@ -1,7 +1,7 @@
 <?php
 namespace App\News\Domain\Entity;
 
-use App\News\Domain\Validator\Constraints\ImageID;
+use App\News\Domain\ValueObject\ImageID;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

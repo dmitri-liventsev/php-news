@@ -1,4 +1,5 @@
 {
+  "build/client/client.css": "/build/client/client.css",
   "build/client/client.js": "/build/client/client.js",
   "build/client/runtime.js": "/build/client/runtime.js"
 }

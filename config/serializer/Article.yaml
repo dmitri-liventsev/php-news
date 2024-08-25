@@ -1,0 +1,25 @@
+App\News\Domain\Entity\Article:
+  attributes:
+    id:
+      groups: ['article:read']
+    title:
+      groups: ['article:read']
+    shortDescription:
+      groups: ['article:read']
+    content:
+      groups: ['article:read']
+    image:
+      groups: ['article:read']
+    numberOfViews:
+      groups: ['article:read']
+    isTop:
+      groups: ['article:read']
+    categories:
+      groups: ['article:read']
+      normalizer: App\News\Infrastructure\Serializer\CategoryIdNormalizer
+    createdAt:
+      groups: ['article:read']
+    updatedAt:
+      groups: ['article:read']
+    deletedAt:
+      groups: ['article:read']

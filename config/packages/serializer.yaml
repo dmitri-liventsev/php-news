@@ -1,0 +1,6 @@
+framework:
+  serializer:
+    default_context:
+      enable_max_depth: true
+      yaml_indentation: 2
+    circular_reference_handler: 'App\News\Infrastructure\Serializer\CircularReferenceHandler'

@@ -7,6 +7,8 @@ use App\News\Domain\ValueObject\CategoryID;
 
 interface CategoryRepositoryInterface
 {
+    public function findById(CategoryID $categoryID): ?Category;
+
     public function findByIds(array $ids): array;
 
     public function save(Category $category): CategoryID;

@@ -3,7 +3,7 @@
 namespace App\News\Domain\Repository;
 
 use App\News\Domain\Entity\Image;
-use App\News\Domain\Validator\Constraints\ImageID;
+use App\News\Domain\ValueObject\ImageID;
 
 interface ImageRepositoryInterface
 {

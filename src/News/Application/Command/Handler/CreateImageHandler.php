@@ -5,7 +5,7 @@ namespace App\News\Application\Command\Handler;
 use App\News\Application\Command\CreateImageCommand;
 use App\News\Domain\Entity\Image;
 use App\News\Domain\Repository\ImageRepositoryInterface;
-use App\News\Domain\Validator\Constraints\ImageID;
+use App\News\Domain\ValueObject\ImageID;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CreateImageHandler

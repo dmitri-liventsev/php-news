@@ -92,3 +92,6 @@ services:
             $recipientEmail: '%env(RECIPIENT_EMAIL)%'
         tags:
             - { name: 'console.command' }
+
+    App\News\Infrastructure\Serializer\CategoryIdNormalizer:
+        tags: [ 'serializer.normalizer' ]

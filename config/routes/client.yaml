@@ -6,7 +6,7 @@ get_article_by_id:
 
 # Route for getting articles by category and page
 get_articles:
-  path: /api/category/{category_id}/articles/{page_id<\d+>?0}
+  path: /api/category/{category_id}/articles/{page_id<\d+>?1}
   controller: App\News\Interface\Http\Client\Controller\ArticleController::getArticlesByCategory
   methods: ['GET']
 

@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useDispatch, useSelector } from 'react-redux';
 import {AppDispatch, RootState} from '../../store';
-import {fetchArticlesByCategory} from "../../features/news/newsSlice";
+import {fetchArticlesByCategory, resetCategoryState} from "../../features/news/newsSlice";
 import {CategoryPreview} from "./index";
 import {Article} from "../Article";
-import {Box, CardMedia} from "@mui/material";
+import {Box, CardMedia, CircularProgress} from "@mui/material";
 import ArticlePreview from "../Article/ArticlePreview";
 
 const Category: React.FC = () => {
@@ -30,6 +30,10 @@ const Category: React.FC = () => {
         loading = categoryArticles[categoryIdInt].loading;
         error = categoryArticles[categoryIdInt].error;
     }
+
+    useEffect(() => {
+        dispatch(resetCategoryState({ categoryId: categoryIdInt }));
+    }, [location.pathname, dispatch, categoryId]);
 
     useEffect(() => {
         if (categoryId) {
@@ -59,7 +63,7 @@ const Category: React.FC = () => {
                 ))}
             </InfiniteScroll>
 
-            {loading  && (<h4>Loading...</h4>)}
+            {loading  && (<CircularProgress />)}
         </div>
     );
 };

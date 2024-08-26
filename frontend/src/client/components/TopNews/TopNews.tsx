@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import CategoryPreview from '../Category/CategoryPreview';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../store";
-import {fetchNews} from "../../features/news/newsSlice"; // Импорт интерфейса Category
+import {fetchNews} from "../../features/news/newsSlice";
+import {CircularProgress} from "@mui/material"; // Импорт интерфейса Category
 
 const TopNews: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -12,7 +13,7 @@ const TopNews: React.FC = () => {
         dispatch(fetchNews());
     }, [dispatch]);
 
-    if (topNews.loading) return <h4>Loading...</h4>;
+    if (topNews.loading) return <CircularProgress />;
     if (topNews.error) return <div>Error: {topNews.error}</div>;
 
     return (

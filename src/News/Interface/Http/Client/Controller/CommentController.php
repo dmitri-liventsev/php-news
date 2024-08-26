@@ -34,10 +34,10 @@ class CommentController extends AbstractController
 
     public function postComment(int $article_id, CreateCommentRequest $request): JsonResponse
     {
-        $this->handle(
+        $commentID = $this->handle(
             CreateCommentCommand::fromRequest($article_id, $request)
         );
 
-        return new JsonResponse(['status' => 'Comment added successfully'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Comment added successfully', 'ok' => true, 'id' => $commentID->getValue()], Response::HTTP_CREATED);
     }
 }

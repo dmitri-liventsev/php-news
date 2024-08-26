@@ -8,7 +8,7 @@ use App\News\Interface\Http\Client\Controller\Request\CreateCommentRequest;
 readonly class CreateCommentCommand
 {
     public function __construct(
-        public ArticleID $newsId,
+        public ArticleID $articleID,
         public string    $content,
         public string    $author,
     ) {}

@@ -38,8 +38,8 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
 
     public function save(Category $category): CategoryID
     {
-        $this->_em->persist($category);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($category);
+        $this->getEntityManager()->flush();
 
         return $category->getId();
     }

@@ -2,8 +2,6 @@
 
 namespace App\News\Interface\Http\Admin\Controller\Request;
 
-use App\News\Domain\Validator\Constraints\CategoryIDs;
-use App\News\Domain\Validator\Constraints\ImageID;
 use App\News\Infrastructure\Util\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -41,12 +39,10 @@ class CreateArticleRequest extends BaseRequest
                 new NotBlank(),
                 new Type('integer'),
                 new Positive(),
-                new ImageID()
             ],
             'categories' => [
                 new NotBlank(),
                 new Type('array'),
-                new CategoryIDs(),
                 new All([
                     new Type('integer'),
                     new Positive()

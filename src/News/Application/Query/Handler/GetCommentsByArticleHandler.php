@@ -5,6 +5,7 @@ namespace App\News\Application\Query\Handler;
 use App\News\Application\Query\GetCommentsByArticleQuery;
 use App\News\Domain\Entity\Comment;
 use App\News\Domain\Repository\CommentRepositoryInterface;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GetCommentsByArticleHandler
@@ -16,14 +17,8 @@ class GetCommentsByArticleHandler
         $this->commentRepository = $commentRepository;
     }
 
-    public function __invoke(GetCommentsByArticleQuery $query): Comment
+    public function __invoke(GetCommentsByArticleQuery $query): array | Collection
     {
-        $comment = $this->commentRepository->findByArticle($query->articleID);
-
-        if (!$comment) {
-            throw new NotFoundHttpException('Comment not found');
-        }
-
-        return $comment;
+        return $this->commentRepository->findByArticle($query->articleID);
     }
 }

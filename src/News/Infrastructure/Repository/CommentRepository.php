@@ -9,6 +9,7 @@ use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\CommentID;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Collection;
 
 class CommentRepository extends ServiceEntityRepository implements CommentRepositoryInterface
 {
@@ -19,8 +20,8 @@ class CommentRepository extends ServiceEntityRepository implements CommentReposi
 
     public function save(Comment $comment): CommentID
     {
-        $this->_em->persist($comment);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($comment);
+        $this->getEntityManager()->flush();
 
         return $comment->getId();
     }
@@ -36,7 +37,7 @@ class CommentRepository extends ServiceEntityRepository implements CommentReposi
         $queryBuilder->getQuery()->execute();
     }
 
-    public function findByArticle(ArticleID $articleID): ?Comment
+    public function findByArticle(ArticleID $articleID): array | Collection
     {
         return $this->createQueryBuilder('c')
             ->where('c.article = :articleID')

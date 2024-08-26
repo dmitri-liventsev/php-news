@@ -21,8 +21,8 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
 
     public function save(Article $article): ArticleID
     {
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($article);
+        $this->getEntityManager()->flush();
 
         return $article->getId();
     }
@@ -124,5 +124,10 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
             ->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findById(ArticleID $articleID)
+    {
+        return $this->find($articleID->getValue());
     }
 }

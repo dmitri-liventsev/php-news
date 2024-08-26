@@ -1,5 +1,12 @@
 import {CategoryPreview} from "../Category";
 
+export interface Comment {
+    id: number | null;
+    articleId: number;
+    author: string;
+    content: string;
+}
+
 export interface Image {
     id: number;
     title: string;

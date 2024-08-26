@@ -17,8 +17,8 @@ class ImageRepository extends ServiceEntityRepository implements ImageRepository
 
     public function save(Image $image): ImageID
     {
-        $this->_em->persist($image);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($image);
+        $this->getEntityManager()->flush();
 
         return $image->getId();
     }

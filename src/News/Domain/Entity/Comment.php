@@ -17,6 +17,7 @@ class Comment
     #[ORM\Column(type: 'string', length: 255)]
     private string $author;
 
+    #[ORM\Column(type: 'text')]
     private string $content;
 
     #[ORM\Column(name: 'created_at', type: 'datetime')]

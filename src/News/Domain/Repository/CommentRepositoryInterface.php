@@ -5,6 +5,7 @@ namespace App\News\Domain\Repository;
 use App\News\Domain\Entity\Comment;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\CommentID;
+use phpDocumentor\Reflection\Types\Collection;
 
 interface CommentRepositoryInterface
 {
@@ -12,5 +13,5 @@ interface CommentRepositoryInterface
 
     public function deleteById(CommentID $commentID): void;
 
-    public function findByArticle(ArticleID $articleID): ?Comment;
+    public function findByArticle(ArticleID $articleID): array | Collection;
 }

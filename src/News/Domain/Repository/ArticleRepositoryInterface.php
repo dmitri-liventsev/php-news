@@ -23,4 +23,6 @@ interface ArticleRepositoryInterface
     public function findTopArticlesByCategory(CategoryID $categoryID, int $limit): array;
 
     public function findTopArticles(DateTimeInterface $from, int $limit): array;
+
+    public function findById(ArticleID $articleID);
 }

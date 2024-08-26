@@ -4,8 +4,10 @@ namespace App\News\Infrastructure\Util\Request;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints\Collection;
 
 abstract class BaseRequest
 {
@@ -23,8 +25,14 @@ abstract class BaseRequest
     public function validate()
     {
         $validator = Validation::createValidator();
-        $constraints = $this->getRules();
-        $errors = $validator->validate($this, $constraints);
+        $rules = $this->getRules();
+        $data = [];
+        foreach ($rules as $field => $rule) {
+            $data[$field] = $this->$field;
+        }
+
+        $collectionConstraint = new Collection($rules);
+        $errors = $validator->validate($data, $collectionConstraint);
 
         $messages = ['message' => 'validation_failed', 'errors' => []];
 
@@ -38,7 +46,8 @@ abstract class BaseRequest
         }
 
         if (count($messages['errors']) > 0) {
-            $response = new JsonResponse($messages, 201);
+            $messages['ok'] = false;
+            $response = new JsonResponse($messages, 400);
             $response->send();
 
             exit;

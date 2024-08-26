@@ -250,7 +250,6 @@ const newsSlice = createSlice({
 
 //Comments
             .addCase(fetchArticleComments.pending, (state, action) => {
-                console.log('fetchArticleComments.pending');
                 const { articleId } = action.meta.arg;
                 if (!state.articlesComments[articleId]) {
                     state.articlesComments[articleId] = {

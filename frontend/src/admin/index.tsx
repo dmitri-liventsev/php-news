@@ -1,6 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
+import App from './App';
+import {Provider} from "react-redux";
+import {store} from "./store";
 
-const AdminApp = () => <div>Hello from Admin App!</div>;
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement!);
 
-ReactDOM.render(<AdminApp />, document.getElementById('root'));
+root.render(<ThemeProvider theme={theme}>
+    <Provider store={store}>
+        <App />
+    </Provider>
+</ThemeProvider>)

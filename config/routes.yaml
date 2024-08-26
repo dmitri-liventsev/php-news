@@ -1,3 +1,6 @@
+api_login_check:
+    path: /admin/api/login_check
+
 client_routes:
     resource: '../config/routes/client.yaml'
 
@@ -5,17 +8,17 @@ admin_routes:
     resource: '../config/routes/admin.yaml'
     prefix: /admin
 
-client_home:
-    path: /{reactRouting}
-    controller: App\News\Interface\Http\Client\Controller\ClientController::index
+admin_home:
+    path: /admin/{reactRouting}
+    controller: App\News\Interface\Http\Admin\Controller\AdminController::index
     defaults:
         reactRouting: ''
     requirements:
         reactRouting: ".*"
 
-admin_home:
-    path: /admin/{reactRouting}
-    controller: App\News\Interface\Http\Admin\Controller\AdminController::index
+client_home:
+    path: /{reactRouting}
+    controller: App\News\Interface\Http\Client\Controller\ClientController::index
     defaults:
         reactRouting: ''
     requirements:

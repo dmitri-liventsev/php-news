@@ -4,6 +4,9 @@
       "js": [
         "/build/admin/runtime.js",
         "/build/admin/admin.js"
+      ],
+      "css": [
+        "/build/admin/admin.css"
       ]
     }
   }

@@ -11,7 +11,7 @@ const App = () => {
         <Router>
             <Box sx={{
                 display: 'flex',
-                justifyContent: 'center', // Центрирование по горизонтали
+                justifyContent: 'center',
                 width: '100%',
                 mb: 2
             }}>

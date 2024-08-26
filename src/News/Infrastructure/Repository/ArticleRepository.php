@@ -31,9 +31,12 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
     {
         $article = $this->find($articleID->getValue());
 
-        $entityManager = $this->getEntityManager();
-        $entityManager->remove($article);
-        $entityManager->flush();
+        if (!$article) {
+            return;
+        }
+
+        $this->getEntityManager()->remove($article);
+        $this->getEntityManager()->flush();
     }
 
     /**

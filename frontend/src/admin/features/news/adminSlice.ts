@@ -44,7 +44,9 @@ interface AdminState {
     articlesState: ArticlesState;
     categoriesState: CategoriesState;
     commentsState: CommentsState;
-    deleteState: RequestState
+    deleteArticleState: RequestState
+    deleteCategoryState: RequestState
+    deleteCommentState: RequestState
 }
 
 const initialState: AdminState = {
@@ -70,7 +72,15 @@ const initialState: AdminState = {
         error: null,
         loading: false,
     },
-    deleteState: {
+    deleteArticleState: {
+        error: null,
+        loading: false,
+    },
+    deleteCategoryState: {
+        error: null,
+        loading: false,
+    },
+    deleteCommentState: {
         error: null,
         loading: false,
     }
@@ -109,7 +119,7 @@ export const fetchArticles = createAsyncThunk<
     { articles: Article[] },
     { page: number }
 >(
-    'news/fetchArticlesByCategory',
+    'admin/fetchArticles',
     async ({ page }) => {
         const token = localStorage.getItem('token');
 
@@ -120,13 +130,13 @@ export const fetchArticles = createAsyncThunk<
             }
         });
 
-        const articles = await response.json();
+        const data = await response.json();
         if (!response.ok) {
             handleError(response)
-            throw new Error(articles.message || 'An unknown error occurred');
+            throw new Error(data.message || 'An unknown error occurred');
         }
 
-        return { articles: articles };
+        return { articles: data };
     }
 );
 
@@ -135,7 +145,7 @@ export const deleteArticle = createAsyncThunk<
     { articleId: number },
     { rejectValue: string }
 >(
-    'articles/deleteArticle',
+    'admin/deleteArticle',
     async ({ articleId }, thunkAPI) => {
         try {
             const token = localStorage.getItem('token');
@@ -159,6 +169,61 @@ export const deleteArticle = createAsyncThunk<
         }
     }
 );
+
+export const fetchCategories = createAsyncThunk<
+    { categories: Category[] },
+    { }
+>(
+    'admin/fetchCategories',
+    async ({  }) => {
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`/admin/api/category`, {
+            headers: {
+                'Authorization': `Bearer ${token}`, // Добавляем токен в заголовки
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            handleError(response)
+            throw new Error(data.message || 'An unknown error occurred');
+        }
+
+        return { categories: data };
+    }
+);
+
+export const deleteCategory = createAsyncThunk<
+    { categoryId: number },
+    { categoryId: number },
+    { rejectValue: string }
+>(
+    'admin/deleteCategory',
+    async ({ categoryId }, thunkAPI) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/admin/api/category/${categoryId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                handleError(response)
+                throw new Error('Failed to delete category');
+            }
+
+            return { categoryId };
+        } catch (error) {
+            return thunkAPI.rejectWithValue((error as Error).message);
+        }
+    }
+);
+
 
 const adminSlice = createSlice({
     name: 'admin',
@@ -216,24 +281,72 @@ const adminSlice = createSlice({
                 articlesState.currentPage += 1;
             })
             .addCase(fetchArticles.rejected, (state, action) => {
-                const categoryState = state.articlesState;
+                const articleState = state.articlesState;
+                if (articleState) {
+                    articleState.loading = false;
+                    articleState.error = action.error.message || 'An unknown error occurred';
+                }
+            })
+            .addCase(deleteArticle.pending, (state) => {
+                state.deleteArticleState.loading = true;
+                state.deleteArticleState.error = null;
+            })
+            .addCase(deleteArticle.fulfilled, (state, action: PayloadAction<{ articleId: number }>) => {
+                state.deleteArticleState.loading = false;
+                state.articlesState.articles = state.articlesState.articles.filter(article => article.id !== action.payload.articleId);
+            })
+            .addCase(deleteArticle.rejected, (state, action) => {
+                state.deleteArticleState.loading = false;
+                state.deleteArticleState.error = action.payload || 'Failed to delete article';
+            })
+
+// Categories
+            .addCase(fetchCategories.pending, (state, action) => {
+                if (!state.categoriesState) {
+                    state.categoriesState = {
+                        categories: [],
+                        loading: true,
+                        error: null,
+                    };
+                } else {
+                    state.categoriesState.loading = true;
+                }
+            })
+            .addCase(fetchCategories.fulfilled, (state, action) => {
+                const { categories } = action.payload;
+                const categoryState = state.categoriesState;
+                categoryState.loading = false;
+                categoryState.categories = categories.reduce(
+                    (acc, category) => {
+                        acc[category.id] = category;
+                        return acc;
+                    },
+                    {} as Record<number, Category>
+                );
+            })
+            .addCase(fetchCategories.rejected, (state, action) => {
+                const categoryState = state.categoriesState;
                 if (categoryState) {
                     categoryState.loading = false;
                     categoryState.error = action.error.message || 'An unknown error occurred';
                 }
             })
-            .addCase(deleteArticle.pending, (state) => {
-                state.deleteState.loading = true;
-                state.deleteState.error = null;
+            .addCase(deleteCategory.pending, (state) => {
+                state.deleteCategoryState.loading = true;
+                state.deleteCategoryState.error = null;
             })
-            .addCase(deleteArticle.fulfilled, (state, action: PayloadAction<{ articleId: number }>) => {
-                state.deleteState.loading = false;
-                state.articlesState.articles = state.articlesState.articles.filter(article => article.id !== action.payload.articleId);
+            .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<{ categoryId: number }>) => {
+                state.deleteCategoryState.loading = false;
+                const { categoryId } = action.payload;
+                if (state.categoriesState.categories[categoryId]) {
+                    delete state.categoriesState.categories[categoryId];
+                }
             })
-            .addCase(deleteArticle.rejected, (state, action) => {
-                state.deleteState.loading = false;
-                state.deleteState.error = action.payload || 'Failed to delete article';
+            .addCase(deleteCategory.rejected, (state, action) => {
+                state.deleteCategoryState.loading = false;
+                state.deleteCategoryState.error = action.payload || 'Failed to delete article';
             })
+
 
         ;
     },

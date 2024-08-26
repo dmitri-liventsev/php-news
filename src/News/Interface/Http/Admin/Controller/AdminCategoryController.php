@@ -68,7 +68,7 @@ class AdminCategoryController extends AbstractController
         return new JsonResponse(['status' => 'Category updated']);
     }
 
-    public function deleteCategory(int $category_id, DeleteCategoryCommand $command): JsonResponse
+    public function deleteCategory(int $category_id): JsonResponse
     {
         $categoryID = new CategoryID($category_id);
         $this->handle(new DeleteCategoryCommand($categoryID));

@@ -35,7 +35,7 @@ class Article
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $isTop;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'articles')]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'articles', cascade: ['remove'])]
     #[ORM\JoinTable(
         name: 'article_category',
         joinColumns: [new ORM\JoinColumn(name: 'article_id', referencedColumnName: 'id')],

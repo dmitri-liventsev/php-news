@@ -4,7 +4,7 @@ import adminReducer from './features/news/adminSlice';
 export const store = configureStore({
     reducer: {
         admin: adminReducer,
-    },
+    }
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -46,13 +46,9 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
 
     public function deleteById(CategoryID $categoryID): void
     {
-        $queryBuilder = $this->createQueryBuilder('c');
-        $queryBuilder
-            ->delete(Category::class, 'c')
-            ->where('c.id = :id')
-            ->setParameter('id', $categoryID);
-
-        $queryBuilder->getQuery()->execute();
+        $category = $this->findById($categoryID);
+        $this->getEntityManager()->remove($category);
+        $this->getEntityManager()->flush();
     }
 
     /**

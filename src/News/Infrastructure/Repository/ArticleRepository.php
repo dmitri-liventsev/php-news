@@ -29,13 +29,11 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
 
     public function deleteById(ArticleID $articleID): void
     {
-        $queryBuilder = $this->createQueryBuilder('a');
-        $queryBuilder
-            ->delete(Article::class, 'a')
-            ->where('a.id = :id')
-            ->setParameter('id', $articleID);
+        $article = $this->find($articleID->getValue());
 
-        $queryBuilder->getQuery()->execute();
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($article);
+        $entityManager->flush();
     }
 
     /**

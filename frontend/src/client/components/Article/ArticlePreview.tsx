@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { Article } from './index';
-import {Property} from "csstype";
 import {Link} from "react-router-dom";
 
 interface Props {

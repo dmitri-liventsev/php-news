@@ -10,11 +10,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\HandleTrait;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminCommentController extends AbstractController
 {
     use HandleTrait;
+
+    private MessageBusInterface $messageBus;
+
+    public function __construct(MessageBusInterface $messageBus)
+    {
+        $this->messageBus = $messageBus;
+    }
 
     #[Route('/admin/article/{article_id}/comments', name: 'get_comments_by_article', methods: ['GET'])]
     public function getCommentsByArticle(int $article_id): JsonResponse

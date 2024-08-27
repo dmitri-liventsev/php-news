@@ -5,27 +5,28 @@ import {
     Button,
     Typography,
     FormControlLabel,
-    Checkbox,
     MenuItem,
     Select,
     InputLabel,
     Checkbox as MuiCheckbox,
     ListItemText,
-    FormControl, SelectChangeEvent
+    FormControl,
+    SelectChangeEvent,
+    CircularProgress
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCreateArticleMutation, useUpdateArticleMutation, useFetchArticleQuery, useFetchCategoriesQuery } from '../../features/api/apiSlice';
 import ImageUploader from './ImageUploader';
-import {Article, Image} from './index';
+import { Article, Image } from './index';
 import Loading from "../Util/Loading";
 
 const ArticleForm: React.FC = () => {
     const navigate = useNavigate();
-    const { articleId } = useParams<{ articleId?: string }>();
-    const [createArticle] = useCreateArticleMutation();
-    const [updateArticle] = useUpdateArticleMutation();
-    const { data: article, isLoading: isFetchingArticle } = useFetchArticleQuery(articleId ? parseInt(articleId) : 0, {
-        skip: !articleId,
+    const { article_id } = useParams<{ article_id?: string }>();
+    const [createArticle, { isLoading: isCreating }] = useCreateArticleMutation();
+    const [updateArticle, { isLoading: isUpdating }] = useUpdateArticleMutation();
+    const { data: article, isLoading: isFetchingArticle } = useFetchArticleQuery(article_id ? parseInt(article_id) : 0, {
+        skip: !article_id,
     });
     const { data: categoriesData, isLoading: isFetchingCategories } = useFetchCategoriesQuery();
 
@@ -35,6 +36,7 @@ const ArticleForm: React.FC = () => {
     const [imageId, setImageId] = useState<number | null>(null);
     const [imageFileName, setImageFileName] = useState<string | null>(null);
     const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (article) {
@@ -42,29 +44,33 @@ const ArticleForm: React.FC = () => {
             setShortDescription(article.shortDescription);
             setContent(article.content);
             setImageId(article.image.id);
+            setImageFileName(article.image.fileName);
             setSelectedCategories(article.categories.map(category => category.id));
         }
     }, [article]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
         const articleData = {
             title,
             shortDescription,
             content,
-            imageId: imageId ?? null,
+            imageID: imageId ?? null,
             categories: selectedCategories,
         };
 
         try {
-            if (articleId) {
-                await updateArticle({ articleId: parseInt(articleId), article: articleData }).unwrap();
+            if (article_id) {
+                await updateArticle({ articleId: parseInt(article_id), article: articleData }).unwrap();
             } else {
                 await createArticle(articleData).unwrap();
             }
             navigate('/admin/articles');
         } catch (error) {
             console.error('Failed to save the article:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -82,7 +88,7 @@ const ArticleForm: React.FC = () => {
     return (
         <Box sx={{ padding: 2 }}>
             <Typography variant="h4" gutterBottom>
-                {articleId ? 'Edit Article' : 'Create Article'}
+                {article_id ? 'Edit Article' : 'Create Article'}
             </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
@@ -153,8 +159,18 @@ const ArticleForm: React.FC = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <Button variant="contained" color="primary" type="submit" sx={{ marginTop: 2 }}>
-                    {articleId ? 'Update Article' : 'Create Article'}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    sx={{ marginTop: 2, position: 'relative' }}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <CircularProgress size={24} />
+                    ) : (
+                        article_id ? 'Update Article' : 'Create Article'
+                    )}
                 </Button>
             </form>
         </Box>

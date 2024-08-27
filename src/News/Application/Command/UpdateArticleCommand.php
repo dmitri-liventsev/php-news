@@ -12,7 +12,7 @@ readonly class UpdateArticleCommand
         public string $title,
         public string $shortDescription,
         public string $content,
-        public int    $imageID,
+        public ?int    $imageID,
         public array  $categories
     ) {}
 

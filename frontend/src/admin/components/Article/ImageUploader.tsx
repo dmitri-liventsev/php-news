@@ -17,15 +17,13 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => {
-    const [previewUrl, setPreviewUrl] = useState(fileName ? `/images/articles/${fileName}` : '');
     const [loading, setLoading] = useState(false);
-
+    let previewUrl = fileName ? `/images/articles/${fileName}` : '';
     const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             setLoading(true);
-            setPreviewUrl(URL.createObjectURL(file));
-
+            previewUrl = URL.createObjectURL(file);
             const formData = new FormData();
             formData.append('image', file);
 
@@ -42,8 +40,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
 
                 const result = await response.json();
                 if (response.ok) {
-                    setPreviewUrl(`/images/articles/${result.file_name}`);
-                    onChange(result);
+                    onChange({id: result.id, fileName: result.file_name} as Image);
                 } else {
                     console.error('Upload failed:', result);
                 }
@@ -56,8 +53,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
     };
 
     const handleRemoveImage = () => {
-        setPreviewUrl('');
-        onChange({} as Image);
+        previewUrl = '';
+        onChange({id: 0} as Image);
     };
 
     return (
@@ -87,14 +84,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
             <Button
                 variant="contained"
                 component="label"
-                sx={{ marginTop: '8px', position: 'relative' }}
-                disabled={loading}  // Блокируем кнопку при загрузке
+                sx={{ marginTop: '8px', position: 'relative', minHeight: '25px' }}
+                disabled={loading}
             >
                 {loading ? (
-                    <CircularProgress size={24} sx={{
-                        color: 'white',
-                        position: 'absolute',
-                    }} />
+                    <CircularProgress size={24} />
                 ) : (
                     fileName ? 'Change Image' : 'Upload Image'
                 )}

@@ -154,13 +154,17 @@ class Article
         return $this;
     }
 
+
     /**
      * @param Collection|Category[] $categories
      * @return $this
      */
     public function setCategories(array $categories): self
     {
-        $this->categories = $categories;
+        $this->clearCategories();
+        foreach ($categories as $category) {
+            $this->addCategory($category);
+        }
 
         return $this;
     }
@@ -168,6 +172,13 @@ class Article
     public function removeCategory(Category $category): self
     {
         $this->categories->removeElement($category);
+        return $this;
+    }
+
+    public function clearCategories(): self
+    {
+        $this->categories->clear();
+
         return $this;
     }
 

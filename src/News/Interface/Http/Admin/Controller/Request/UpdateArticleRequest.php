@@ -6,6 +6,7 @@ use App\News\Infrastructure\Util\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
 use Symfony\Component\Validator\Constraints\Type;
 
 class UpdateArticleRequest extends BaseRequest
@@ -17,7 +18,7 @@ class UpdateArticleRequest extends BaseRequest
 
     protected string $content;
 
-    protected int $imageID;
+    protected ?int $imageID;
 
     protected array $categories = [];
 
@@ -37,9 +38,8 @@ class UpdateArticleRequest extends BaseRequest
                 new Type('string')
             ],
             'imageID' => [
-                new NotBlank(),
                 new Type('integer'),
-                new Positive(),
+                new PositiveOrZero(),
             ],
             'categories' => [
                 new NotBlank(),

@@ -28,14 +28,16 @@ class ImageRepository extends ServiceEntityRepository implements ImageRepository
         return $this->find($id);
     }
 
-    public function deleteById(int $imageID): void
+    public function deleteById(ImageID $imageID): void
     {
-        $queryBuilder = $this->createQueryBuilder('i');
-        $queryBuilder
-            ->delete(Image::class, 'i')
-            ->where('i.id = :id')
-            ->setParameter('id', $imageID);
 
-        $queryBuilder->getQuery()->execute();
+        $image = $this->find($imageID->getValue());
+
+        if (!$image) {
+            return;
+        }
+
+        $this->getEntityManager()->remove($image);
+        $this->getEntityManager()->flush();
     }
 }

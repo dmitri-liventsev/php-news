@@ -11,5 +11,5 @@ interface ImageRepositoryInterface
 
     public function findById(int $id): ?Image;
 
-    public function deleteById(int $imageID): void;
+    public function deleteById(ImageID $imageID): void;
 }

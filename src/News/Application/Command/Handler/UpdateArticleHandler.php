@@ -34,16 +34,15 @@ class UpdateArticleHandler
 
     public function __invoke(UpdateArticleCommand $command): void
     {
-        $article = $this->articleRepository->find($command->articleID);
+        /** @var Article $article */
+        $article = $this->articleRepository->find($command->articleID->getValue());
         if (!$article) {
             throw new \Exception('Article not found');
         }
-        $prevImageID = $article->getImageID();
         $article = $this->updateArticle($article, $command);
 
         $this->entityManager->beginTransaction();
         try {
-            $this->imageRepository->deleteById($prevImageID);
             $this->articleRepository->save($article);
             $this->entityManager->commit();
         } catch (Exception $e) {

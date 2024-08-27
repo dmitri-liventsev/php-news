@@ -34,7 +34,7 @@ interface ArticleRequest {
     title: string;
     shortDescription: string;
     content: string;
-    imageId: number | null;
+    imageID: number | null;
     categories: number[];
 }
 
@@ -96,6 +96,7 @@ export const apiSlice = createApi({
         }),
         fetchArticle: builder.query<Article, number>({
             query: (articleId) => `/article/${articleId}`,
+            providesTags: (result) => result ? [{ type: 'Article', id: 'LIST' }] : [],
         }),
         createArticle: builder.mutation<void, ArticleRequest>({
             query: (article) => ({
@@ -103,6 +104,7 @@ export const apiSlice = createApi({
                 method: 'POST',
                 body: article,
             }),
+            invalidatesTags: [{ type: 'Article', id: 'LIST' }],
         }),
         updateArticle: builder.mutation<void, { articleId: number; article: ArticleRequest }>({
             query: ({ articleId, article }) => ({
@@ -110,6 +112,7 @@ export const apiSlice = createApi({
                 method: 'PUT',
                 body: article,
             }),
+            invalidatesTags: [{ type: 'Article', id: 'LIST' }],
         }),
         fetchCategories: builder.query<CategoriesResponse, void>({
             query: () => '/category',

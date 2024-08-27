@@ -3,12 +3,15 @@ import { Grid, Typography } from '@mui/material';
 import ArticlePreview from '../Article/ArticlePreview';
 import { Category as CategoryType } from './index';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     category: CategoryType;
 }
 
 const CategoryPreview: React.FC<Props> = ({ category }) => {
+    const { t } = useTranslation();
+
     return (
         <div>
             <Typography variant="h4" gutterBottom>

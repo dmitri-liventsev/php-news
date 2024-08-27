@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Article } from './index';
+import { useTranslation } from 'react-i18next';
 
 const PLACEHOLDER_IMAGE = '/images/placeholder.png';
 
@@ -12,6 +13,8 @@ interface Props {
 }
 
 const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' }) => {
+    const { t } = useTranslation();
+
     const titleLink = (
         <Link to={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Typography gutterBottom variant="h5" component="div">

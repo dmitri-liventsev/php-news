@@ -3,12 +3,14 @@ import { TextField, Button, List } from '@mui/material';
 import Comment from './Comment';
 import { useFetchArticleCommentsQuery, usePostCommentMutation } from "../../features/api/apiSlice";
 import Loading from "../Util/Loading";
+import { useTranslation } from "react-i18next";
 
 interface ArticleCommentsProps {
     articleId: number;
 }
 
 const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
+    const { t } = useTranslation();
     const { data: comments, error: commentsError, isFetching: commentsLoading } = useFetchArticleCommentsQuery(articleId);
     const [postComment, { error: postCommentError, isLoading: isPosting }] = usePostCommentMutation();
 
@@ -21,15 +23,15 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
 
         const errors: { author?: string; content?: string } = {};
         if (author.trim() === '') {
-            errors.author = 'Author name cannot be empty.';
+            errors.author = t('formErrors.authorEmpty');
         } else if (author.length > 255) {
-            errors.author = 'Author name cannot be longer than 255 characters.';
+            errors.author = t('formErrors.authorTooLong');
         } else if (author.length < 2) {
-            errors.author = 'Author name must be at least 2 characters long.';
+            errors.author = t('formErrors.authorTooShort');
         }
 
         if (content.trim() === '') {
-            errors.content = 'Comment cannot be empty.';
+            errors.content = t('formErrors.commentEmpty');
         }
 
         if (Object.keys(errors).length > 0) {
@@ -43,7 +45,7 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
             setContent('');
             setFormErrors({});
         } catch (err) {
-            console.error('Failed to post comment:', err);
+            console.error(t('formErrors.submitFailed'), err);
         }
     };
 
@@ -51,7 +53,7 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
         <div style={{ padding: '16px' }}>
             <form onSubmit={handleCommentSubmit} style={{ marginBottom: '16px' }}>
                 <TextField
-                    label="Author"
+                    label={t('author')}
                     variant="outlined"
                     fullWidth
                     value={author}
@@ -61,7 +63,7 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
                     helperText={formErrors.author}
                 />
                 <TextField
-                    label="Comment"
+                    label={t('comment')}
                     variant="outlined"
                     multiline
                     rows={4}
@@ -76,9 +78,9 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={isPosting} // Button is disabled while posting
+                    disabled={isPosting}
                 >
-                    {isPosting ? 'Submitting...' : 'Submit'}
+                    {isPosting ? t('submitting') : t('submit')}
                 </Button>
             </form>
 

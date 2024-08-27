@@ -1,0 +1,16 @@
+{
+  "author": "Author",
+  "comment": "Comment",
+  "submitting": "Submitting...",
+  "submit": "Submit",
+  "formErrors": {
+    "authorEmpty": "Author name cannot be empty.",
+    "authorTooLong": "Author name cannot be longer than 255 characters.",
+    "authorTooShort": "Author name must be at least 2 characters long.",
+    "commentEmpty": "Comment cannot be empty.",
+    "submitFailed": "Failed to post comment."
+  },
+  "edit": "Edit",
+  "delete": "Delete",
+  "noArticles": "No articles found."
+}

@@ -6,8 +6,10 @@ import { Typography } from '@mui/material';
 import ArticlePreview from '../Article/ArticlePreview';
 import { useFetchArticlesByCategoryQuery } from '../../features/api/apiSlice';
 import Loading from '../Util/Loading';
+import { useTranslation } from 'react-i18next';
 
 const Category: React.FC = () => {
+    const { t } = useTranslation();
     const { categoryId } = useParams<{ categoryId: string }>();
     const categoryIdInt = Number(categoryId);
     const [page, setPage] = useState(1);
@@ -58,7 +60,7 @@ const Category: React.FC = () => {
             </InfiniteScroll>
 
             {isFetching && <Loading />}
-            {noArticles && <Typography variant="h6">No articles found.</Typography>}
+            {noArticles && <Typography variant="h6">{t('noArticles')}</Typography>}
         </div>
     );
 };

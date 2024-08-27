@@ -23,7 +23,7 @@ export interface Article {
     content: string;
     numberOfViews: number;
     isTop: boolean;
-    image: Image,
+    image: Image | null,
     categories: CategoryPreview[],
     createdAt: string;
     updatedAt: string;

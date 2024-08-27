@@ -1,69 +1,64 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDispatch, useSelector } from 'react-redux';
-import {AppDispatch, RootState} from '../../store';
-import {fetchArticlesByCategory, resetCategoryState} from "../../features/news/newsSlice";
-import {CategoryPreview} from "./index";
-import {Article} from "../Article";
-import {Box, CardMedia, CircularProgress} from "@mui/material";
-import ArticlePreview from "../Article/ArticlePreview";
+import { Article } from '../Article';
+import { Typography } from '@mui/material';
+import ArticlePreview from '../Article/ArticlePreview';
+import { useFetchArticlesByCategoryQuery } from '../../features/api/apiSlice';
+import Loading from '../Util/Loading';
 
 const Category: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
-    const categoryIdInt = Number(categoryId)
-    const dispatch = useDispatch<AppDispatch>();
-    const { categoryArticles } = useSelector(
-        (state: RootState) => state.news || { articles: [], category: null, hasMore: true, page: 1 }
+    const categoryIdInt = Number(categoryId);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [articles, setArticles] = useState<Article[]>([]);
+
+    const { data, error, isFetching, refetch } = useFetchArticlesByCategoryQuery(
+        { categoryId: categoryIdInt, page },
+        { skip: !categoryIdInt }
     );
 
-    let articles = [] as Article[];
-    let category = {} as CategoryPreview;
-    let currentPage = 1;
-    let loading = true;
-    let error = null;
-
-    if ( categoryArticles[categoryIdInt]) {
-        articles = categoryArticles[categoryIdInt].articles;
-        category = categoryArticles[categoryIdInt].category;
-        currentPage = categoryArticles[categoryIdInt].currentPage;
-        loading = categoryArticles[categoryIdInt].loading;
-        error = categoryArticles[categoryIdInt].error;
-    }
+    useEffect(() => {
+        // Reset state and fetch data when categoryId changes
+        setArticles([]);
+        setPage(1);
+        setHasMore(true);
+        refetch();
+    }, [categoryId, refetch]);
 
     useEffect(() => {
-        dispatch(resetCategoryState({ categoryId: categoryIdInt }));
-    }, [location.pathname, dispatch, categoryId]);
-
-    useEffect(() => {
-        if (categoryId) {
-            dispatch(fetchArticlesByCategory({ categoryId: categoryIdInt, page: 1 }));
+        if (data?.articles) {
+            setArticles(prevArticles => [...prevArticles, ...data.articles]);
+            // Check if there's more data to load
+            setHasMore(data.articles.length >= 10);
         }
-    }, [categoryIdInt, dispatch]);
+    }, [data]);
 
     const fetchMoreData = () => {
-        if (categoryId) {
-            dispatch(fetchArticlesByCategory({ categoryId: categoryIdInt, page: currentPage }));
+        if (hasMore) {
+            setPage(prevPage => prevPage + 1);
         }
     };
 
-    if (error) return <div>Error: {error}</div>;
+    const noArticles = articles.length === 0 && !isFetching && page === 1;
 
     return (
         <div>
-            <h1>{category.title}</h1>
+            <Typography variant="h4" gutterBottom>{data?.category.title}</Typography>
             <InfiniteScroll
                 dataLength={articles.length}
                 next={fetchMoreData}
-                hasMore={articles.length / (currentPage-1) >= 10}
+                hasMore={hasMore}
                 loader={<></>}
             >
-                {articles.map(article => (
-                    <ArticlePreview key={article.id} article={article} direction={"row"}/>
+                {articles.map((article: Article) => (
+                    <ArticlePreview key={article.id} article={article} direction={"row"} />
                 ))}
             </InfiniteScroll>
 
-            {loading  && (<CircularProgress />)}
+            {isFetching && <Loading />}
+            {noArticles && <Typography variant="h6">No articles found.</Typography>}
         </div>
     );
 };

@@ -1,24 +1,32 @@
 import React from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { Article } from './index';
-import {Link} from "react-router-dom";
+
+const PLACEHOLDER_IMAGE = '/images/placeholder.png';
 
 interface Props {
     article: Article;
-    maxWidth?: number | undefined;
+    maxWidth?: number;
     direction?: 'row' | 'column';
 }
 
 const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' }) => {
-    const titleLink = (<Link to={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <Typography gutterBottom variant="h5" component="div">
-            {article.title}
-        </Typography>
-    </Link>);
+    const titleLink = (
+        <Link to={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography gutterBottom variant="h5" component="div">
+                {article.title}
+            </Typography>
+        </Link>
+    );
 
-    const shortDescription = (<Typography variant="body2" color="text.secondary">
-        {article.shortDescription}
-    </Typography>);
+    const shortDescription = (
+        <Typography variant="body2" color="text.secondary">
+            {article.shortDescription}
+        </Typography>
+    );
+
+    const imageUrl = article.image && article.image.fileName != null ? `/images/articles/${article.image.fileName}` : PLACEHOLDER_IMAGE;
 
     return (
         <>
@@ -27,7 +35,7 @@ const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' 
                     <CardMedia
                         component="img"
                         sx={{ width: 150 }}
-                        image={`/images/articles/${article.image.fileName}`}
+                        image={imageUrl}
                         alt={article.title}
                     />
                     <CardContent sx={{ flex: 1 }}>
@@ -36,11 +44,11 @@ const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' 
                     </CardContent>
                 </Card>
             ) : (
-                <Card sx={{ maxWidth: maxWidth, margin: 2 }}>
+                <Card sx={{ maxWidth, margin: 2 }}>
                     <CardMedia
                         component="img"
                         height="140"
-                        image={"/images/articles/" + article.image.fileName}
+                        image={imageUrl}
                         alt={article.title}
                     />
                     <CardContent>

@@ -4,13 +4,15 @@ object-assign
 @license MIT
 */
 
-/*! ../../features/news/newsSlice */
+/*! ../../features/api/apiSlice */
 
 /*! ../Article/ArticlePreview */
 
 /*! ../Category/CategoryPreview */
 
 /*! ../ClassNameGenerator */
+
+/*! ../Util/Loading */
 
 /*! ../breakpoints */
 
@@ -72,7 +74,7 @@ object-assign
 
 /*! ./factoryWithTypeCheckers */
 
-/*! ./features/news/newsSlice */
+/*! ./features/api/apiSlice */
 
 /*! ./getDisplayName */
 
@@ -93,6 +95,10 @@ object-assign
 /*! ./responsivePropType */
 
 /*! ./rootShouldForwardProp */
+
+/*! ./rtk-query-react.development.cjs */
+
+/*! ./rtk-query.development.cjs */
 
 /*! ./slotShouldForwardProp */
 
@@ -151,6 +157,10 @@ object-assign
 /*! @mui/utils/resolveProps */
 
 /*! @reduxjs/toolkit */
+
+/*! @reduxjs/toolkit/query */
+
+/*! @reduxjs/toolkit/query/react */
 
 /*! hoist-non-react-statics */
 
@@ -242,6 +252,10 @@ object-assign
   !*** ./node_modules/object-assign/index.js ***!
   \*********************************************/
 
+/*!*********************************************!*\
+  !*** ./src/client/features/api/apiSlice.ts ***!
+  \*********************************************/
+
 /*!**********************************************!*\
   !*** ./node_modules/immer/dist/cjs/index.js ***!
   \**********************************************/
@@ -258,9 +272,9 @@ object-assign
   !*** ./node_modules/redux/dist/cjs/redux.cjs ***!
   \***********************************************/
 
-/*!***********************************************!*\
-  !*** ./src/client/features/news/newsSlice.ts ***!
-  \***********************************************/
+/*!************************************************!*\
+  !*** ./src/client/components/Util/Loading.tsx ***!
+  \************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/@mui/material/colors/red.js ***!
@@ -495,6 +509,10 @@ object-assign
   \***************************************************************/
 
 /*!***************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/cjs/index.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
   !*** ./node_modules/use-sync-external-store/with-selector.js ***!
   \***************************************************************/
 
@@ -562,6 +580,10 @@ object-assign
   !*** ./node_modules/@mui/system/esm/useThemeProps/useThemeProps.js ***!
   \*********************************************************************/
 
+/*!*********************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/react/cjs/index.js ***!
+  \*********************************************************************/
+
 /*!**********************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/interopRequireDefault.js ***!
   \**********************************************************************/
@@ -626,6 +648,10 @@ object-assign
   !*** ./node_modules/@mui/utils/esm/formatMuiErrorMessage/index.js + 1 modules ***!
   \********************************************************************************/
 
+/*!********************************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/cjs/rtk-query.development.cjs ***!
+  \********************************************************************************/
+
 /*!*********************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
   \*********************************************************************************/
@@ -669,6 +695,10 @@ object-assign
 /*!**************************************************************************************!*\
   !*** ./node_modules/@mui/styled-engine/StyledEngineProvider/StyledEngineProvider.js ***!
   \**************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/react/cjs/rtk-query-react.development.cjs ***!
+  \********************************************************************************************/
 
 /*!*******************************************************************************************************!*\
   !*** ./node_modules/use-sync-external-store/cjs/use-sync-external-store-with-selector.development.js ***!

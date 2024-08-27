@@ -1,24 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CategoryPreview from '../Category/CategoryPreview';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, RootState} from "../../store";
-import {fetchNews} from "../../features/news/newsSlice";
-import {CircularProgress} from "@mui/material"; // Импорт интерфейса Category
+import {useFetchNewsQuery} from "../../features/api/apiSlice";
+import Loading from "../Util/Loading";
 
 const TopNews: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { topNews } = useSelector((state: RootState) => state.news);
+    const { data: categories, error, isLoading } = useFetchNewsQuery();
 
-    useEffect(() => {
-        dispatch(fetchNews());
-    }, [dispatch]);
-
-    if (topNews.loading) return <CircularProgress />;
-    if (topNews.error) return <div>Error: {topNews.error}</div>;
+    if (isLoading) return <Loading />;
 
     return (
         <div>
-            {topNews.categories.map(category => (
+            {categories?.map(category => (
                 <CategoryPreview key={category.id} category={category} />
             ))}
         </div>

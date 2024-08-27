@@ -1,36 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import {Card, CardContent, Typography, Avatar, CircularProgress, CardMedia} from '@mui/material';
-import {AppDispatch, RootState} from "../../store";
-import {fetchArticle} from "../../features/news/newsSlice";
-import {Article} from "./index";
-import ArticleComments from "./ArticleComments";
+import { Card, CardContent, Typography, CircularProgress, CardMedia } from '@mui/material';
+import ArticleComments from './ArticleComments';
+import {useFetchArticleCommentsQuery, useFetchArticleQuery} from "../../features/api/apiSlice";
+import Loading from "../Util/Loading";
 
+const PLACEHOLDER_IMAGE = '/images/placeholder.png';
 const Article: React.FC = () => {
     const { articleId } = useParams<{ articleId: string }>();
     const articleIdInt = Number(articleId);
-    const dispatch = useDispatch<AppDispatch>();
+    const { data: article, error: articleError, isLoading: articleLoading } = useFetchArticleQuery(articleIdInt);
 
-    const { articles } = useSelector((state: RootState) => state.news);
-
-    let article = {} as Article;
-    let loading = true;
-    let error = null;
-    if (articles[articleIdInt]) {
-        article = articles[articleIdInt].article;
-        loading = articles[articleIdInt].loading;
-        error = articles[articleIdInt].error;
-    }
-
-    useEffect(() => {
-        if (articleId) {
-            dispatch(fetchArticle({ articleId: +articleId }));
-        }
-    }, [dispatch, articleId]);
-
-    if (loading) return <CircularProgress />;
-    if (error) return <Typography color="error">Error: {error}</Typography>;
+    if (articleLoading) return <Loading />;
+    const imageUrl = article && article.image && article.image.fileName != null
+        ? `/images/articles/${article.image.fileName}`
+        : PLACEHOLDER_IMAGE;
 
     return (
         <div style={{ padding: '16px' }}>
@@ -42,11 +26,10 @@ const Article: React.FC = () => {
                                 <CardMedia
                                     component="img"
                                     height="300"
-                                    image={"/images/articles/" + article.image.fileName}
+                                    image={imageUrl}
                                     alt={article.title}
                                 />
                             )}
-
                             <Typography variant="h4">{article.title}</Typography>
                             <Typography variant="body1" style={{ marginBottom: '16px' }}>{article.shortDescription}</Typography>
                             <Typography variant="body2" color="textSecondary">Published on: {new Date(article.createdAt).toLocaleDateString()}</Typography>

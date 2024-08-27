@@ -1,39 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { TextField, Button, List, CircularProgress, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, List } from '@mui/material';
 import Comment from './Comment';
-import { AppDispatch, RootState } from '../../store';
-import {fetchArticle, fetchArticleComments, postComment} from '../../features/news/newsSlice';
-import { Comment as CommentType } from './';
+import { useFetchArticleCommentsQuery, usePostCommentMutation } from "../../features/api/apiSlice";
+import Loading from "../Util/Loading";
 
 interface ArticleCommentsProps {
     articleId: number;
 }
 
 const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { articlesComments } = useSelector((state: RootState) => state.news);
-
-    let comments = [] as CommentType[];
-    let loading = false;
-    let error = null;
-    if (articlesComments[articleId]) {
-        comments = articlesComments[articleId].comments;
-        loading = articlesComments[articleId].loading;
-        error = articlesComments[articleId].error;
-    }
-
-    useEffect(() => {
-        if (articleId) {
-            dispatch(fetchArticleComments({ articleId: +articleId }));
-        }
-    }, [dispatch, articleId]);
+    const { data: comments, error: commentsError, isFetching: commentsLoading } = useFetchArticleCommentsQuery(articleId);
+    const [postComment, { error: postCommentError, isLoading: isPosting }] = usePostCommentMutation();
 
     const [author, setAuthor] = useState('');
     const [content, setContent] = useState('');
     const [formErrors, setFormErrors] = useState<{ author?: string; content?: string }>({});
 
-    const handleCommentSubmit = (e: React.FormEvent) => {
+    const handleCommentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const errors: { author?: string; content?: string } = {};
@@ -54,10 +37,14 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
             return;
         }
 
-        dispatch(postComment({ id: null, articleId, author, content }));
-        setAuthor('');
-        setContent('');
-        setFormErrors({});
+        try {
+            await postComment({ id: 0, articleId, author, content }).unwrap();
+            setAuthor('');
+            setContent('');
+            setFormErrors({});
+        } catch (err) {
+            console.error('Failed to post comment:', err);
+        }
     };
 
     return (
@@ -85,11 +72,17 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
                     error={!!formErrors.content}
                     helperText={formErrors.content}
                 />
-                <Button type="submit" variant="contained" color="primary">Submit</Button>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={isPosting} // Button is disabled while posting
+                >
+                    {isPosting ? 'Submitting...' : 'Submit'}
+                </Button>
             </form>
 
-            {loading && <CircularProgress />}
-            {error && <Typography color="error">Error: {error}</Typography>}
+            {commentsLoading && <Loading />}
 
             {comments && (
                 <List>

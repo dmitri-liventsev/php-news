@@ -5,8 +5,8 @@ const Logout: React.FC = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Удаляем токен из localStorage
-        navigate('/login'); // Перенаправляем на страницу логина
+        localStorage.removeItem('token');
+        navigate('/login');
     };
 
     return <button onClick={handleLogout}>Logout</button>;

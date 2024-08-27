@@ -4,23 +4,21 @@ import { Article } from './index';
 import { Link } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { deleteArticle } from '../../features/news/adminSlice';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
+import { useDeleteArticleMutation } from '../../features/api/apiSlice';
 
 interface Props {
     article: Article;
 }
 
 const ArticleRow: React.FC<Props> = ({ article }) => {
-    const dispatch = useDispatch<AppDispatch>();
+    const [deleteArticle, { isLoading: isDeleting }] = useDeleteArticleMutation();
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure?')) {
+        if (window.confirm('Are you sure you want to delete this article?')) {
             setLoading(true);
             try {
-                await dispatch(deleteArticle({ articleId: article.id })).unwrap();
+                await deleteArticle(article.id).unwrap();
             } catch (error) {
                 console.error('Failed to delete the article:', error);
             } finally {
@@ -67,7 +65,7 @@ const ArticleRow: React.FC<Props> = ({ article }) => {
                     </IconButton>
                 </Link>
 
-                <IconButton onClick={handleDelete} disabled={loading}>
+                <IconButton onClick={handleDelete} disabled={loading || isDeleting}>
                     <DeleteIcon />
                 </IconButton>
             </Box>

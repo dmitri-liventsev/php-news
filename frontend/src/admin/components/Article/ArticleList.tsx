@@ -1,60 +1,41 @@
-import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, RootState} from "../../store";
-import {deleteArticle, fetchArticles, resetArticles} from "../../features/news/adminSlice";
-import InfiniteScroll from "react-infinite-scroll-component";
-import {CircularProgress} from "@mui/material";
-import ArticleRow from "./ArticleRow";
-import {Article} from "./index";
-import TableHeader from "./TableHeader";
+import React, { useState, useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { useFetchArticlesQuery } from '../../features/api/apiSlice';
+import { CircularProgress, List } from '@mui/material';
+import ArticleRow from './ArticleRow';
 
-const ArticleList = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { articlesState } = useSelector(
-        (state: RootState) => state.admin || { articles: [], hasMore: true, page: 1 }
-    );
-
-    let articles = [] as Article[];
-    let currentPage = 1;
-    let loading = true;
-    let error = null;
-    if ( articlesState) {
-        articles = articlesState.articles;
-        currentPage = articlesState.currentPage;
-        loading = articlesState.loading;
-        error = articlesState.error;
-    }
-
-    useEffect(() => {
-        dispatch(resetArticles());
-    }, [location.pathname, dispatch]);
-
-    useEffect(() => {
-        dispatch(fetchArticles({  page: 1 }));
-    }, [dispatch]);
-
+const ArticleList: React.FC = () => {
+    const [page, setPage] = useState(1);
+    const { data: articles, error, isLoading, isFetching } = useFetchArticlesQuery(page);
+    const hasMore = articles != undefined && articles?.length >= 10;
     const fetchMoreData = () => {
-        dispatch(fetchArticles({  page: currentPage }));
+        if (hasMore) {
+            setPage(prevPage => prevPage + 1);
+        }
     };
 
-    if (error) return <div>Error: {error}</div>;
+    useEffect(() => {
+        setPage(1);
+    }, []);
 
     return (
-        <div>
-            <TableHeader />
+        <>
             <InfiniteScroll
-                dataLength={articles.length}
+                dataLength={articles?.length || 0}
                 next={fetchMoreData}
-                hasMore={articles.length / (currentPage-1) >= 10}
+                hasMore={hasMore}
                 loader={<></>}
+                endMessage={<></>}
             >
-                {articles.map(article => (
-                    <ArticleRow key={article.id} article={article}/>
-                ))}
+                <List>
+                    {articles?.map(article => (
+                        <ArticleRow key={article.id} article={article} />
+                    ))}
+                </List>
             </InfiniteScroll>
 
-            {loading  && (<CircularProgress />)}
-        </div>
+            {isLoading  && (<CircularProgress />)}
+        </>
     );
 };
 

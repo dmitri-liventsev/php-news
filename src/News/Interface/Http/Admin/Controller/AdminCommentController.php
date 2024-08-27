@@ -38,7 +38,7 @@ class AdminCommentController extends AbstractController
     }
 
     #[Route('/admin/comment/{comment_id}', name: 'delete_comment', methods: ['DELETE'])]
-    public function deleteComment(int $comment_id, DeleteCommentCommand $command): JsonResponse
+    public function deleteComment(int $comment_id): JsonResponse
     {
         $commentID = new CommentID($comment_id);
         $this->handle(new DeleteCommentCommand($commentID));

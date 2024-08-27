@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import adminReducer from './features/news/adminSlice';
+import { apiSlice } from './features/api/apiSlice';
 
 export const store = configureStore({
     reducer: {
-        admin: adminReducer,
-    }
+        [apiSlice.reducerPath]: apiSlice.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

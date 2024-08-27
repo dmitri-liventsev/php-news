@@ -1,31 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import {AppDispatch} from "../../../client/store";
-import {login} from "../../features/news/adminSlice";
-import {RootState} from "../../store";
+import { useLoginMutation } from '../../features/api/apiSlice'; // Импортируйте новый хук
+import { CircularProgress } from '@mui/material';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const { tokenState } = useSelector((state: RootState) => state.admin);
 
-    const dispatch = useDispatch<AppDispatch>();
+    const [login, { isLoading }] = useLoginMutation();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const resultAction = await dispatch(login({ username, password })).unwrap();
-            const { token } = resultAction;
+            const result = await login({ username, password }).unwrap();
+            const { token } = result;
+            console.log('login token', token)
             localStorage.setItem('token', token);
             navigate('/admin/articles');
         } catch (err) {
-            //TODO handler error
-            console.error('Login failed:', err);
+            setError('Login failed. Please check your credentials.');
         }
     };
+
     return (
         <div>
             <h2>Login</h2>
@@ -37,16 +35,16 @@ const Login: React.FC = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <br/>
+                <br />
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <br/>
-                <button type="submit" disabled={tokenState.loading}>
-                    {tokenState.loading ? 'Logging in...' : 'Login'}
+                <br />
+                <button type="submit" disabled={isLoading}>
+                    {isLoading ? <CircularProgress size={24} /> : 'Login'}
                 </button>
             </form>
         </div>

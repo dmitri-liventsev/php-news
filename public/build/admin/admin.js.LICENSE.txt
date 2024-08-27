@@ -4,7 +4,7 @@ object-assign
 @license MIT
 */
 
-/*! ../../features/news/adminSlice */
+/*! ../../features/api/apiSlice */
 
 /*! ../ClassNameGenerator */
 
@@ -42,11 +42,11 @@ object-assign
 
 /*! ./CategoryRow */
 
+/*! ./CommentRow */
+
 /*! ./Layout */
 
 /*! ./PrivateRoute */
-
-/*! ./TableHeader */
 
 /*! ./applyStyles */
 
@@ -94,13 +94,11 @@ object-assign
 
 /*! ./emotion-element-5486c51c.browser.esm.js */
 
-/*! ./errorHandler */
-
 /*! ./extendSxProp */
 
 /*! ./factoryWithTypeCheckers */
 
-/*! ./features/news/adminSlice */
+/*! ./features/api/apiSlice */
 
 /*! ./getDisplayName */
 
@@ -121,6 +119,10 @@ object-assign
 /*! ./responsivePropType */
 
 /*! ./rootShouldForwardProp */
+
+/*! ./rtk-query-react.development.cjs */
+
+/*! ./rtk-query.development.cjs */
 
 /*! ./slotShouldForwardProp */
 
@@ -219,6 +221,10 @@ object-assign
 /*! @mui/utils/useIsFocusVisible */
 
 /*! @reduxjs/toolkit */
+
+/*! @reduxjs/toolkit/query */
+
+/*! @reduxjs/toolkit/query/react */
 
 /*! clsx */
 
@@ -320,6 +326,10 @@ object-assign
   !*** ./node_modules/prop-types/lib/has.js ***!
   \********************************************/
 
+/*!********************************************!*\
+  !*** ./src/admin/features/api/apiSlice.ts ***!
+  \********************************************/
+
 /*!*********************************************!*\
   !*** ./node_modules/object-assign/index.js ***!
   \*********************************************/
@@ -343,14 +353,6 @@ object-assign
 /*!***********************************************!*\
   !*** ./node_modules/redux/dist/cjs/redux.cjs ***!
   \***********************************************/
-
-/*!***********************************************!*\
-  !*** ./src/admin/features/news/adminSlice.ts ***!
-  \***********************************************/
-
-/*!*************************************************!*\
-  !*** ./src/admin/features/news/errorHandler.ts ***!
-  \*************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/@mui/material/colors/red.js ***!
@@ -444,6 +446,10 @@ object-assign
   !*** ./src/admin/components/Article/ArticleRow.tsx ***!
   \*****************************************************/
 
+/*!*****************************************************!*\
+  !*** ./src/admin/components/Comment/CommentRow.tsx ***!
+  \*****************************************************/
+
 /*!******************************************************!*\
   !*** ./node_modules/@mui/material/utils/debounce.js ***!
   \******************************************************/
@@ -458,10 +464,6 @@ object-assign
 
 /*!******************************************************!*\
   !*** ./src/admin/components/Article/ArticleList.tsx ***!
-  \******************************************************/
-
-/*!******************************************************!*\
-  !*** ./src/admin/components/Article/TableHeader.tsx ***!
   \******************************************************/
 
 /*!******************************************************!*\
@@ -673,6 +675,10 @@ object-assign
   \***************************************************************/
 
 /*!***************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/cjs/index.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
   !*** ./node_modules/use-sync-external-store/with-selector.js ***!
   \***************************************************************/
 
@@ -762,6 +768,10 @@ object-assign
 
 /*!*********************************************************************!*\
   !*** ./node_modules/@mui/system/esm/useThemeProps/useThemeProps.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/react/cjs/index.js ***!
   \*********************************************************************/
 
 /*!**********************************************************************!*\
@@ -856,6 +866,10 @@ object-assign
   !*** ./node_modules/@mui/utils/esm/formatMuiErrorMessage/index.js + 1 modules ***!
   \********************************************************************************/
 
+/*!********************************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/cjs/rtk-query.development.cjs ***!
+  \********************************************************************************/
+
 /*!*********************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
   \*********************************************************************************/
@@ -911,6 +925,10 @@ object-assign
 /*!**************************************************************************************!*\
   !*** ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js ***!
   \**************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@reduxjs/toolkit/dist/query/react/cjs/rtk-query-react.development.cjs ***!
+  \********************************************************************************************/
 
 /*!*******************************************************************************************************!*\
   !*** ./node_modules/use-sync-external-store/cjs/use-sync-external-store-with-selector.development.js ***!

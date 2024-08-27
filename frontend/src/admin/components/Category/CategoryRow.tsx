@@ -1,26 +1,24 @@
 import React, { useState } from 'react';
-import {Box, Typography, IconButton, ListItem} from '@mui/material';
+import { Box, Typography, IconButton, ListItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
-import {Category} from "./index";
-import {deleteCategory} from "../../features/news/adminSlice";
+import { useDeleteCategoryMutation } from '../../features/api/apiSlice'; // Импорт хука для удаления категории
+import { Category } from './index';
 
 interface Props {
     category: Category;
 }
 
-const ArticleRow: React.FC<Props> = ({ category }) => {
-    const dispatch = useDispatch<AppDispatch>();
+const CategoryRow: React.FC<Props> = ({ category }) => {
+    const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation(); // Использование хука для удаления
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure?')) {
+        if (window.confirm('Are you sure you want to delete this category?')) {
             setLoading(true);
             try {
-                await dispatch(deleteCategory({ categoryId: category.id })).unwrap();
+                await deleteCategory(category.id).unwrap();
             } catch (error) {
-                console.error('Failed to delete the article:', error);
+                console.error('Failed to delete the category:', error);
             } finally {
                 setLoading(false);
             }
@@ -42,8 +40,8 @@ const ArticleRow: React.FC<Props> = ({ category }) => {
                 {category.title}
             </Typography>
             <IconButton
-                onClick={() => handleDelete()}
-                disabled={loading === true}
+                onClick={handleDelete}
+                disabled={loading || isDeleting}
             >
                 <DeleteIcon />
             </IconButton>
@@ -51,4 +49,4 @@ const ArticleRow: React.FC<Props> = ({ category }) => {
     );
 };
 
-export default ArticleRow;
+export default CategoryRow;

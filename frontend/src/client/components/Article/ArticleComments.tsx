@@ -54,7 +54,6 @@ const ArticleComments: React.FC<ArticleCommentsProps> = ({ articleId }) => {
             return;
         }
 
-        // Если ошибок нет, отправляем комментарий
         dispatch(postComment({ id: null, articleId, author, content }));
         setAuthor('');
         setContent('');

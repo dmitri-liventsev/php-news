@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Category from './components/Category/Category';
 import CategoryList from './components/Category/CategoryList';
 import ArticleList from './components/Article/ArticleList';
-import Article from './components/Article/Article';
+import Article from './components/Article/ArticleForm';
 import CommentList from './components/Comment/CommentList';
 import Login from "./components/Auth/Login";
 import PrivateRoute from "./PrivateRoute";

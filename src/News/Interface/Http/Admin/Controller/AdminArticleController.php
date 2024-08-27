@@ -87,6 +87,6 @@ class AdminArticleController extends AbstractController
             $request)
         );
 
-        return new JsonResponse(['id' => $image->getId()->getValue(), 'file_name' => $image->setFileName()], Response::HTTP_OK);
+        return new JsonResponse(['id' => $image->getId()->getValue(), 'file_name' => $image->getFileName()], Response::HTTP_OK);
     }
 }

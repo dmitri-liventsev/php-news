@@ -37,7 +37,9 @@ class CreateImageHandler
         $command->file->move($this->imagesDirectory, $newFilename);
 
         $image = new Image();
-        $image->setFilename($newFilename);
+        $image->setFilename($newFilename)
+            ->setCreatedAt(new \DateTime())
+            ->setUpdatedAt(new \DateTime());
 
         $this->imageRepository->save($image);
 

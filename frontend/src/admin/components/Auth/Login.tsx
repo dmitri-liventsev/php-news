@@ -16,7 +16,6 @@ const Login: React.FC = () => {
         try {
             const result = await login({ username, password }).unwrap();
             const { token } = result;
-            console.log('login token', token)
             localStorage.setItem('token', token);
             navigate('/admin/articles');
         } catch (err) {

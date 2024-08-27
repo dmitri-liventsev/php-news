@@ -61,7 +61,13 @@ abstract class BaseRequest
 
     protected function populate(): void
     {
-        foreach ($this->getRequest()->toArray() as $property => $value) {
+        $request = $this->getRequest();
+
+        if (!$request->getContent() || !$this->isJson($request->getContent())) {
+            return;
+        }
+
+        foreach ($request->toArray() as $property => $value) {
             if (property_exists($this, $property)) {
                 $this->{$property} = $value;
             }

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import {Box, IconButton, CircularProgress, Button, Typography} from '@mui/material';
+import {Box, IconButton, Button, Typography, CircularProgress} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/system';
+import {Image} from "./index";
 
 const ImagePreview = styled('img')({
     width: '100px',
@@ -11,8 +12,8 @@ const ImagePreview = styled('img')({
 });
 
 interface ImageUploaderProps {
-    fileName?: string;
-    onChange: (id: number | 0) => void;
+    fileName: string | null;
+    onChange: (image: Image) => void;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => {
@@ -29,15 +30,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
             formData.append('image', file);
 
             try {
+                const token = localStorage.getItem('token') || '';
+
                 const response = await fetch('/admin/api/articles/image/upload', {
                     method: 'POST',
                     body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 const result = await response.json();
                 if (response.ok) {
                     setPreviewUrl(`/images/articles/${result.file_name}`);
-                    onChange(result.id);
+                    onChange(result);
                 } else {
                     console.error('Upload failed:', result);
                 }
@@ -51,7 +57,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
 
     const handleRemoveImage = () => {
         setPreviewUrl('');
-        onChange(0);
+        onChange({} as Image);
     };
 
     return (
@@ -78,14 +84,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
                 </Box>
             )}
 
-            {loading && <CircularProgress sx={{ marginTop: '8px' }} />}
-
             <Button
                 variant="contained"
                 component="label"
-                sx={{ marginTop: '8px' }}
+                sx={{ marginTop: '8px', position: 'relative' }}
+                disabled={loading}  // Блокируем кнопку при загрузке
             >
-                {fileName ? 'Change Image' : 'Upload Image'}
+                {loading ? (
+                    <CircularProgress size={24} sx={{
+                        color: 'white',
+                        position: 'absolute',
+                    }} />
+                ) : (
+                    fileName ? 'Change Image' : 'Upload Image'
+                )}
                 <input
                     type="file"
                     hidden

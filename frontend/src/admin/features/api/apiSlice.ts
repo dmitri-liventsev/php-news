@@ -25,6 +25,19 @@ interface UpdateCategoryResponse {
     status: string;
 }
 
+interface ImageIdResponse {
+    id: number;
+    fileName: string;
+}
+
+interface ArticleRequest {
+    title: string;
+    shortDescription: string;
+    content: string;
+    imageId: number | null;
+    categories: number[];
+}
+
 interface ArticlesResponse extends Array<Article> {}
 
 interface CategoriesResponse extends Array<Category> {}
@@ -81,6 +94,23 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Article', id: 'LIST' }],
         }),
+        fetchArticle: builder.query<Article, number>({
+            query: (articleId) => `/article/${articleId}`,
+        }),
+        createArticle: builder.mutation<void, ArticleRequest>({
+            query: (article) => ({
+                url: '/article',
+                method: 'POST',
+                body: article,
+            }),
+        }),
+        updateArticle: builder.mutation<void, { articleId: number; article: ArticleRequest }>({
+            query: ({ articleId, article }) => ({
+                url: `/article/${articleId}`,
+                method: 'PUT',
+                body: article,
+            }),
+        }),
         fetchCategories: builder.query<CategoriesResponse, void>({
             query: () => '/category',
             providesTags: (result) => result ? [{ type: 'Category', id: 'LIST' }] : [],
@@ -124,6 +154,9 @@ export const apiSlice = createApi({
 
 export const {
     useFetchArticlesQuery,
+    useCreateArticleMutation,
+    useUpdateArticleMutation,
+    useFetchArticleQuery,
     useFetchCategoriesQuery,
     useFetchCommentsQuery,
     useDeleteArticleMutation,

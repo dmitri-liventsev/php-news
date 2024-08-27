@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, ListItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDeleteCommentMutation } from '../../features/api/apiSlice'; // Импорт хука для удаления комментария
+import { useDeleteCommentMutation } from '../../features/api/apiSlice';
 import { Comment } from './index';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const CommentRow: React.FC<Props> = ({ comment }) => {
-    const [deleteComment, { isLoading: isDeleting }] = useDeleteCommentMutation(); // Использование хука для удаления
+    const [deleteComment, { isLoading: isDeleting }] = useDeleteCommentMutation();
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../../features/api/apiSlice'; // Импортируйте новый хук
-import { CircularProgress } from '@mui/material';
+import { useLoginMutation } from '../../features/api/apiSlice';
+import { CircularProgress, Box, TextField, Button, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const [login, { isLoading }] = useLoginMutation();
 
@@ -19,34 +21,46 @@ const Login: React.FC = () => {
             localStorage.setItem('token', token);
             navigate('/admin/articles');
         } catch (err) {
-            setError('Login failed. Please check your credentials.');
+            setError(t('login.loginFailed'));
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            {error && <p>{error}</p>}
-            <form onSubmit={handleLogin}>
-                <input
-                    type="text"
-                    placeholder="Email"
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
+            <Typography variant="h4" gutterBottom>
+                {t('login.heading')}
+            </Typography>
+            {error && <Typography color="error">{error}</Typography>}
+            <form onSubmit={handleLogin} style={{ width: '100%', maxWidth: 400 }}>
+                <TextField
+                    label={t('login.emailPlaceholder')}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <br />
-                <input
+                <TextField
+                    label={t('login.passwordPlaceholder')}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
                     type="password"
-                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <br />
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? <CircularProgress size={24} /> : 'Login'}
-                </button>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={isLoading}
+                >
+                    {isLoading ? <CircularProgress size={24} /> : t('login.loginButton')}
+                </Button>
             </form>
-        </div>
+        </Box>
     );
 };
 

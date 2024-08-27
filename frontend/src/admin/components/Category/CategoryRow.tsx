@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, ListItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDeleteCategoryMutation } from '../../features/api/apiSlice'; // Импорт хука для удаления категории
+import { useDeleteCategoryMutation } from '../../features/api/apiSlice';
 import { Category } from './index';
 import CategoryButton from "./CategoryButton";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     category: Category;
 }
 
 const CategoryRow: React.FC<Props> = ({ category }) => {
-    const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation(); // Использование хука для удаления
+    const { t } = useTranslation();
+    const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
+        if (window.confirm(t('category.deleteConfirmation'))) {
             setLoading(true);
             try {
                 await deleteCategory(category.id).unwrap();
             } catch (error) {
-                console.error('Failed to delete the category:', error);
+                console.error(t('category.deleteFailed'), error);
             } finally {
                 setLoading(false);
             }

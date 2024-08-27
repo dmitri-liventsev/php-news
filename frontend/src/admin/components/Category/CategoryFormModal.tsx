@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress } from '@mui/material';
 import { Category } from "./index";
+import { useTranslation } from 'react-i18next';
 
 interface CategoryFormModalProps {
     open: boolean;
@@ -11,6 +12,7 @@ interface CategoryFormModalProps {
 }
 
 const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, onSave, title, category }) => {
+    const { t } = useTranslation();
     const [titleInput, setTitleInput] = useState(category ? category.title : '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, on
 
     const validateTitle = (title: string) => {
         if (title.length < 3 || title.length > 250) {
-            setError('Title must be between 3 and 250 characters');
+            setError(t('category.titleTooShort'));
             return false;
         }
         setError(null);
@@ -51,7 +53,7 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, on
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Category Title"
+                    label={t('category.titleLabel')}
                     fullWidth
                     variant="outlined"
                     value={titleInput}
@@ -66,14 +68,14 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, on
                     onClick={onClose}
                     color="primary"
                 >
-                    Cancel
+                    {t('category.cancel')}
                 </Button>
                 <Button
                     onClick={handleSave}
                     color="primary"
                     disabled={loading}
                 >
-                    {loading ? <CircularProgress size={24} /> : 'Save'}
+                    {loading ? <CircularProgress size={24} /> : t('category.save')}
                 </Button>
             </DialogActions>
         </Dialog>

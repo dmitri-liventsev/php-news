@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import {Box, IconButton, Button, Typography, CircularProgress} from '@mui/material';
+import { Box, IconButton, Button, Typography, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/system';
-import {Image} from "./index";
+import { Image } from "./index";
+import { useTranslation } from 'react-i18next';
 
 const ImagePreview = styled('img')({
     width: '100px',
@@ -17,14 +18,16 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     let previewUrl = fileName ? `/images/articles/${fileName}` : '';
+
     const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const validFormats = ['image/jpeg', 'image/png'];
             if (!validFormats.includes(file.type)) {
-                alert('Invalid file type. Please upload a JPG or PNG image.');
+                alert(t('imageUploader.invalidFileType'));
                 return;
             }
 
@@ -45,12 +48,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
 
                 const result = await response.json();
                 if (response.ok) {
-                    onChange({id: result.id, fileName: result.file_name} as Image);
+                    onChange({ id: result.id, fileName: result.file_name } as Image);
                 } else {
-                    console.error('Upload failed:', result);
+                    console.error(t('imageUploader.uploadFailed'), result);
                 }
             } catch (error) {
-                console.error('Error uploading image:', error);
+                console.error(t('imageUploader.uploadFailed'), error);
             } finally {
                 setLoading(false);
             }
@@ -59,7 +62,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
 
     const handleRemoveImage = () => {
         previewUrl = '';
-        onChange({id: 0} as Image);
+        onChange({ id: 0 } as Image);
     };
 
     return (
@@ -82,7 +85,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
                 </Box>
             ) : (
                 <Box sx={{ width: '100px', height: '100px', border: '1px dashed gray', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Typography variant="body2">No Image</Typography>
+                    <Typography variant="body2">{t('imageUploader.noImage')}</Typography>
                 </Box>
             )}
 
@@ -95,7 +98,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
                 {loading ? (
                     <CircularProgress size={24} />
                 ) : (
-                    fileName ? 'Change Image' : 'Upload Image'
+                    fileName ? t('imageUploader.changeImage') : t('imageUploader.uploadImage')
                 )}
                 <input
                     type="file"

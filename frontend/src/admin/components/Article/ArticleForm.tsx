@@ -4,23 +4,24 @@ import {
     TextField,
     Button,
     Typography,
-    FormControlLabel,
+    FormControl,
     MenuItem,
     Select,
     InputLabel,
     Checkbox as MuiCheckbox,
     ListItemText,
-    FormControl,
-    SelectChangeEvent,
-    CircularProgress
+    CircularProgress,
+    FormControlLabel,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCreateArticleMutation, useUpdateArticleMutation, useFetchArticleQuery, useFetchCategoriesQuery } from '../../features/api/apiSlice';
 import ImageUploader from './ImageUploader';
 import { Article, Image } from './index';
-import Loading from "../Util/Loading";
+import Loading from '../Util/Loading';
+import { useTranslation } from 'react-i18next';
 
 const ArticleForm: React.FC = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { article_id } = useParams<{ article_id?: string }>();
     const [createArticle, { isLoading: isCreating }] = useCreateArticleMutation();
@@ -52,17 +53,21 @@ const ArticleForm: React.FC = () => {
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
-        if (title.length < 3 || title.length > 250) {
-            newErrors.title = 'Title must be between 3 and 250 characters';
+        if (title.trim().length < 3 || title.trim().length > 250) {
+            newErrors.title = title.trim().length < 3
+                ? t('formErrors.titleTooShort')
+                : t('formErrors.titleTooLong');
         }
-        if (shortDescription.length < 3 || shortDescription.length > 250) {
-            newErrors.shortDescription = 'Short description must be between 3 and 250 characters';
+        if (shortDescription.trim().length < 3 || shortDescription.trim().length > 250) {
+            newErrors.shortDescription = shortDescription.trim().length < 3
+                ? t('formErrors.shortDescriptionTooShort')
+                : t('formErrors.shortDescriptionTooLong');
         }
-        if (content.length < 3) {
-            newErrors.content = 'Content must be at least 3 characters long';
+        if (content.trim().length < 3) {
+            newErrors.content = t('formErrors.contentTooShort');
         }
         if (selectedCategories.length === 0) {
-            newErrors.categories = 'At least one category must be selected';
+            newErrors.categories = t('formErrors.categoriesEmpty');
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -100,7 +105,7 @@ const ArticleForm: React.FC = () => {
         setImageFileName(image.id === 0 ? null : image.fileName);
     };
 
-    const handleCategoryChange = (event: SelectChangeEvent<number[]>) => {
+    const handleCategoryChange = (event: any) => {
         setSelectedCategories(event.target.value as number[]);
     };
 
@@ -109,11 +114,11 @@ const ArticleForm: React.FC = () => {
     return (
         <Box sx={{ padding: 2 }}>
             <Typography variant="h4" gutterBottom>
-                {article_id ? 'Edit Article' : 'Create Article'}
+                {article_id ? t('form.editArticle') : t('form.createArticle')}
             </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
-                    label="Title"
+                    label={t('form.title')}
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -124,7 +129,7 @@ const ArticleForm: React.FC = () => {
                     helperText={errors.title}
                 />
                 <TextField
-                    label="Short Description"
+                    label={t('form.shortDescription')}
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -135,7 +140,7 @@ const ArticleForm: React.FC = () => {
                     helperText={errors.shortDescription}
                 />
                 <TextField
-                    label="Content"
+                    label={t('form.content')}
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -152,7 +157,7 @@ const ArticleForm: React.FC = () => {
                     onChange={handleImageChange}
                 />
                 <FormControl fullWidth margin="normal" error={!!errors.categories}>
-                    <InputLabel id="categories-select-label">Categories</InputLabel>
+                    <InputLabel id="categories-select-label">{t('form.categories')}</InputLabel>
                     <Select
                         labelId="categories-select-label"
                         multiple
@@ -197,7 +202,7 @@ const ArticleForm: React.FC = () => {
                     {isSubmitting ? (
                         <CircularProgress size={24} />
                     ) : (
-                        article_id ? 'Update Article' : 'Create Article'
+                        article_id ? t('form.updateArticle') : t('form.createArticle')
                     )}
                 </Button>
             </form>

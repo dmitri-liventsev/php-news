@@ -1,7 +1,6 @@
 import React from 'react';
 import './styles/App.scss';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Category from './components/Category/Category';
 import CategoryList from './components/Category/CategoryList';
 import ArticleList from './components/Article/ArticleList';
 import Article from './components/Article/ArticleForm';
@@ -30,7 +29,6 @@ const App = () => {
                             <Route path="article/:article_id" element={<Article />} />
                             <Route path="article/:article_id/comments" element={<CommentList />} />
                             <Route path="categories" element={<CategoryList />} />
-                            <Route path="category/:categoryId" element={<Category />} />
                         </Route>
                     </Route>
                 </Routes>

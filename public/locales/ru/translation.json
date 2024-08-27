@@ -8,10 +8,79 @@
     "authorTooLong": "Имя автора не может быть длиннее 255 символов.",
     "authorTooShort": "Имя автора должно содержать не менее 2 символов.",
     "commentEmpty": "Комментарий не может быть пустым.",
-    "submitFailed": "Не удалось отправить комментарий."
+    "submitFailed": "Не удалось отправить комментарий.",
+    "titleEmpty": "Заголовок не может быть пустым.",
+    "titleTooLong": "Заголовок не может быть длиннее 250 символов.",
+    "titleTooShort": "Заголовок должен содержать не менее 3 символов.",
+    "shortDescriptionEmpty": "Краткое описание не может быть пустым.",
+    "shortDescriptionTooLong": "Краткое описание не может быть длиннее 250 символов.",
+    "shortDescriptionTooShort": "Краткое описание должно содержать не менее 3 символов.",
+    "contentEmpty": "Содержание не может быть пустым.",
+    "contentTooShort": "Содержание должно содержать не менее 3 символов.",
+    "categoriesEmpty": "Необходимо выбрать хотя бы одну категорию."
+  },
+  "form": {
+    "editArticle": "Редактировать статью",
+    "createArticle": "Создать статью",
+    "title": "Заголовок",
+    "shortDescription": "Краткое описание",
+    "content": "Содержание",
+    "categories": "Категории",
+    "updateArticle": "Обновить статью"
   },
   "publishedOn": "Опубликовано",
   "edit": "Редактировать",
   "delete": "Удалить",
-  "noArticles": "Статьи не найдены."
+  "noArticles": "Статьи не найдены.",
+  "articleList": {
+    "createArticle": "Создать статью",
+    "noArticles": "Статьи не найдены",
+    "endMessage": "Вы видели все стетьи"
+  },
+  "articleRow": {
+    "confirmDelete": "Вы уверены, что хотите удалить эту статью?",
+    "deleteFailed": "Не удалось удалить статью"
+  },
+  "imageUploader": {
+    "invalidFileType": "Неверный формат файла. Пожалуйста, загрузите изображение в формате JPG или PNG.",
+    "uploadFailed": "Ошибка загрузки изображения.",
+    "changeImage": "Изменить изображение",
+    "uploadImage": "Загрузить изображение",
+    "noImage": "Нет изображения"
+  },
+  "tableHeader": {
+    "title": "Заголовок",
+    "shortDescription": "Краткое описание"
+  },
+  "login": {
+    "heading": "Вход",
+    "emailPlaceholder": "Электронная почта",
+    "passwordPlaceholder": "Пароль",
+    "loginButton": "Войти",
+    "loginFailed": "Ошибка входа. Пожалуйста, проверьте ваши учетные данные."
+  },
+  "category": {
+    "createButton": "Создать категорию",
+    "editButton": "Редактировать категорию",
+    "modalTitleCreate": "Создать категорию",
+    "modalTitleEdit": "Редактировать категорию",
+    "saveFailed": "Не удалось сохранить категорию.",
+    "titleLabel": "Название категории",
+    "titleTooShort": "Название должно содержать от 3 до 250 символов",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "noCategoriesFound": "Категории не найдены",
+    "deleteConfirmation": "Вы уверены, что хотите удалить эту категорию?",
+    "deleteFailed": "Не удалось удалить категорию."
+  },
+  "comments": {
+    "noCommentsFound": "Комментарии не найдены",
+    "confirmDelete": "Вы уверены, что хотите удалить этот комментарий?",
+    "deleteFailed": "Не удалось удалить комментарий."
+  },
+  "layout": {
+    "articles": "Статьи",
+    "categories": "Категории",
+    "logout": "Выйти"
+  }
 }

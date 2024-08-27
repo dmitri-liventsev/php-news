@@ -8,9 +8,84 @@
     "authorTooLong": "Author name cannot be longer than 255 characters.",
     "authorTooShort": "Author name must be at least 2 characters long.",
     "commentEmpty": "Comment cannot be empty.",
-    "submitFailed": "Failed to post comment."
+    "submitFailed": "Failed to post comment.",
+    "titleEmpty": "Title cannot be empty.",
+    "titleTooLong": "Title cannot be longer than 250 characters.",
+    "titleTooShort": "Title must be at least 3 characters long.",
+    "shortDescriptionEmpty": "Short description cannot be empty.",
+    "shortDescriptionTooLong": "Short description cannot be longer than 250 characters.",
+    "shortDescriptionTooShort": "Short description must be at least 3 characters long.",
+    "contentEmpty": "Content cannot be empty.",
+    "contentTooShort": "Content must be at least 3 characters long.",
+    "categoriesEmpty": "At least one category must be selected."
+  },
+  "form": {
+    "editArticle": "Edit Article",
+    "createArticle": "Create Article",
+    "title": "Title",
+    "shortDescription": "Short Description",
+    "content": "Content",
+    "categories": "Categories",
+    "updateArticle": "Update Article"
+  },
+  "errors": {
+    "titleLength": "Title must be between 3 and 250 characters.",
+    "shortDescriptionLength": "Short description must be between 3 and 250 characters.",
+    "contentLength": "Content must be at least 3 characters long.",
+    "selectCategory": "At least one category must be selected."
   },
   "edit": "Edit",
   "delete": "Delete",
-  "noArticles": "No articles found."
+  "noArticles": "No articles found.",
+  "articleList": {
+    "createArticle": "Create Article",
+    "noArticles": "No articles found",
+    "endMessage": "You have seen all the articles"
+  },
+  "articleRow": {
+    "confirmDelete": "Are you sure you want to delete this article?",
+    "deleteFailed": "Failed to delete the article"
+  },
+  "imageUploader": {
+    "invalidFileType": "Invalid file type. Please upload a JPG or PNG image.",
+    "uploadFailed": "Error uploading image.",
+    "changeImage": "Change Image",
+    "uploadImage": "Upload Image",
+    "noImage": "No Image"
+  },
+  "tableHeader": {
+    "title": "Title",
+    "shortDescription": "Short description"
+  },
+  "login": {
+    "heading": "Login",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Login",
+    "loginFailed": "Login failed. Please check your credentials."
+  },
+  "category": {
+    "createButton": "Create Category",
+    "editButton": "Edit Category",
+    "modalTitleCreate": "Create Category",
+    "modalTitleEdit": "Edit Category",
+    "saveFailed": "Failed to save category.",
+    "titleLabel": "Category Title",
+    "titleTooShort": "Title must be between 3 and 250 characters",
+    "save": "Save",
+    "cancel": "Cancel",
+    "noCategoriesFound": "No categories found",
+    "deleteConfirmation": "Are you sure you want to delete this category?",
+    "deleteFailed": "Failed to delete the category."
+  },
+  "comments": {
+    "noCommentsFound": "No comments found",
+    "confirmDelete": "Are you sure you want to delete this comment?",
+    "deleteFailed": "Failed to delete the comment."
+  },
+  "layout": {
+    "articles": "Articles",
+    "categories": "Categories",
+    "logout": "LogOut"
+  }
 }

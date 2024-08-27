@@ -1,15 +1,12 @@
 import React from 'react';
-import {Box, Card, CardContent, CardMedia, IconButton, Typography} from '@mui/material';
-import { Article } from './index';
-import {Link} from "react-router-dom";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-interface Props {
-
-}
+interface Props {}
 
 const TableHeader: React.FC<Props> = () => {
+    const { t } = useTranslation();
+
     return (
         <Box
             sx={{
@@ -32,22 +29,23 @@ const TableHeader: React.FC<Props> = () => {
                     <Typography
                         variant="h6"
                         noWrap
-                        sx={{ fontWeight: 'bold', fontSize: '1.25rem' }} // Customize font weight and size here
+                        sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}
                     >
-                        Title
+                        {t('tableHeader.title')}
                     </Typography>
                 </Box>
                 <Box sx={{ width: '500px', overflow: 'hidden' }}>
                     <Typography
                         variant="h6"
                         noWrap
-                        sx={{ fontWeight: 'bold', fontSize: '1.25rem' }} // Customize font weight and size here
+                        sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}
                     >
-                        Short description
+                        {t('tableHeader.shortDescription')}
                     </Typography>
                 </Box>
             </Box>
             <Box>
+                {/* Add additional content if needed */}
             </Box>
         </Box>
     );

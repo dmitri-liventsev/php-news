@@ -5,22 +5,24 @@ import { Link } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeleteArticleMutation } from '../../features/api/apiSlice';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     article: Article;
 }
 
 const ArticleRow: React.FC<Props> = ({ article }) => {
+    const { t } = useTranslation();
     const [deleteArticle, { isLoading: isDeleting }] = useDeleteArticleMutation();
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this article?')) {
+        if (window.confirm(t('articleRow.confirmDelete'))) {
             setLoading(true);
             try {
                 await deleteArticle(article.id).unwrap();
             } catch (error) {
-                console.error('Failed to delete the article:', error);
+                console.error(t('articleRow.deleteFailed'), error);
             } finally {
                 setLoading(false);
             }

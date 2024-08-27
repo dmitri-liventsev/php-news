@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useFetchArticlesQuery } from '../../features/api/apiSlice';
-import {Box, Button, CircularProgress, List, Typography} from '@mui/material';
+import { Box, Button, List, Typography } from '@mui/material';
 import ArticleRow from './ArticleRow';
-import Loading from "../Util/Loading";
-import CategoryButton from "../Category/CategoryButton";
-import {Link} from "react-router-dom";
+import Loading from '../Util/Loading';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ArticleList: React.FC = () => {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const { data: articles, error, isLoading, isFetching } = useFetchArticlesQuery(page);
     const hasMore = articles != undefined && articles?.length >= 10;
+
     const fetchMoreData = () => {
         if (hasMore) {
             setPage(prevPage => prevPage + 1);
@@ -31,7 +33,7 @@ const ArticleList: React.FC = () => {
                         variant="contained"
                         color="primary"
                     >
-                        Create Article
+                        {t('articleList.createArticle')}
                     </Button>
                 </Link>
             </Box>
@@ -52,11 +54,11 @@ const ArticleList: React.FC = () => {
 
             {noArticles && (
                 <Typography variant="h6" align="center" sx={{ mt: 2 }}>
-                    No articles found
+                    {t('articleList.noArticles')}
                 </Typography>
             )}
 
-            {isFetching  && (<Loading />)}
+            {isFetching && <Loading />}
         </>
     );
 };

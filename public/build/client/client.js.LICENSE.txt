@@ -58,6 +58,8 @@ object-assign
 
 /*! ./components/TopNews/TopNews */
 
+/*! ./components/Util/NotFound */
+
 /*! ./createBreakpoints */
 
 /*! ./createTheme */
@@ -289,6 +291,10 @@ object-assign
 /*!************************************************!*\
   !*** ./src/client/components/Util/Loading.tsx ***!
   \************************************************/
+
+/*!*************************************************!*\
+  !*** ./src/client/components/Util/NotFound.tsx ***!
+  \*************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/@mui/material/colors/red.js ***!

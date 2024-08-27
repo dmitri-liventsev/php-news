@@ -87,5 +87,11 @@
     "articles": "Articles",
     "categories": "Categories",
     "logout": "LogOut"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "Sorry, the page you are looking for does not exist.",
+    "home": "Go to Articles",
+    "button": "Go to Homepage"
   }
 }

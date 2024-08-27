@@ -16,12 +16,12 @@ class GetArticleByIdHandler
         $this->articleRepository = $articleRepository;
     }
 
-    public function __invoke(GetArticleByIdQuery $query): ArticleDTO
+    public function __invoke(GetArticleByIdQuery $query): ?ArticleDTO
     {
         $article = $this->articleRepository->find($query->articleID->getValue());
 
         if (!$article) {
-            throw new NotFoundHttpException('Article not found');
+            return null;
         }
 
         return new ArticleDTO($article);

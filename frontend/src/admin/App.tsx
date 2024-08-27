@@ -8,8 +8,9 @@ import CommentList from './components/Comment/CommentList';
 import Login from "./components/Auth/Login";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "./Layout";
-import {Box} from "@mui/material";
+import { Box } from "@mui/material";
 import ArticleForm from "./components/Article/ArticleForm";
+import NotFound from "./components/Util/NotFound";
 
 const App = () => {
     return (
@@ -31,6 +32,8 @@ const App = () => {
                             <Route path="categories" element={<CategoryList />} />
                         </Route>
                     </Route>
+                    <Route path="/404" element={<NotFound />} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Box>
         </Router>

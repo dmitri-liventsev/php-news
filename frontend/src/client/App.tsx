@@ -5,8 +5,9 @@ import TopNews from './components/TopNews/TopNews';
 import Category from './components/Category/Category';
 import Article from './components/Article/Article';
 import {Box} from "@mui/material";
+import NotFound from "./components/Util/NotFound";
 
-const App = () => {
+const App: React.FC = () => {
     return (
         <Router>
             <Box sx={{
@@ -16,9 +17,10 @@ const App = () => {
                 mb: 2
             }}>
                 <Routes>
-                    <Route path="/" Component={TopNews} />
-                    <Route path="/category/:categoryId" Component={Category} />
-                    <Route path="/article/:articleId" Component={Article} />
+                    <Route path="/" element={<TopNews />} />
+                    <Route path="/category/:categoryId" element={<Category />} />
+                    <Route path="/article/:articleId" element={<Article />} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Box>
         </Router>

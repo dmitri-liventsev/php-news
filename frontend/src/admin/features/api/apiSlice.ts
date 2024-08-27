@@ -62,10 +62,14 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithJwt = async (args: string | FetchArgs, api: any, extraOptions: any) => {
     let result = await baseQuery(args, api, extraOptions);
 
-    if (result.error && result.error.status === 401) {
-        // Remove token and redirect on 401
-        localStorage.removeItem('token');
-        window.location.href = '/admin';
+    const errorCode = result.error ? result.error.status : 200;
+    switch (errorCode) {
+        case 401:
+            localStorage.removeItem('token');
+            window.location.href = '/admin';
+            break;
+        case 404:
+            window.location.href = '/admin/404';
     }
 
     return result;

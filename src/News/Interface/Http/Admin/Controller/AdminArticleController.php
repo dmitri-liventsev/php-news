@@ -57,11 +57,11 @@ class AdminArticleController extends AbstractController
 
     public function createArticle(CreateArticleRequest $request): JsonResponse
     {
-        $articleId = $this->handle(
+        $articleID = $this->handle(
             CreateArticleCommand::fromRequest($request)
         );
 
-        return new JsonResponse(['status' => 'Article created', 'article_id' => $articleId], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Article created', 'article_id' => $articleID->getValue()], Response::HTTP_CREATED);
     }
 
     public function updateArticle(int $article_id, UpdateArticleRequest $request): JsonResponse

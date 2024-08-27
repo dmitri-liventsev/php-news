@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useFetchArticlesQuery } from '../../features/api/apiSlice';
-import {CircularProgress, List, Typography} from '@mui/material';
+import {Box, Button, CircularProgress, List, Typography} from '@mui/material';
 import ArticleRow from './ArticleRow';
 import Loading from "../Util/Loading";
+import CategoryButton from "../Category/CategoryButton";
+import {Link} from "react-router-dom";
 
 const ArticleList: React.FC = () => {
     const [page, setPage] = useState(1);
@@ -23,6 +25,17 @@ const ArticleList: React.FC = () => {
 
     return (
         <>
+            <Box marginTop={'10px'}>
+                <Link to="/admin/articles/create">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                    >
+                        Create Article
+                    </Button>
+                </Link>
+            </Box>
+
             <InfiniteScroll
                 dataLength={articles?.length || 0}
                 next={fetchMoreData}

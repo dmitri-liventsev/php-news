@@ -22,11 +22,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ fileName, onChange }) => 
     const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            const validFormats = ['image/jpeg', 'image/png'];
+            if (!validFormats.includes(file.type)) {
+                alert('Invalid file type. Please upload a JPG or PNG image.');
+                return;
+            }
+
             setLoading(true);
             previewUrl = URL.createObjectURL(file);
             const formData = new FormData();
             formData.append('image', file);
-
             try {
                 const token = localStorage.getItem('token') || '';
 

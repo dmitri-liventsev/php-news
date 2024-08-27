@@ -10,6 +10,7 @@ import Login from "./components/Auth/Login";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "./Layout";
 import {Box} from "@mui/material";
+import ArticleForm from "./components/Article/ArticleForm";
 
 const App = () => {
     return (
@@ -25,6 +26,7 @@ const App = () => {
                     <Route element={<PrivateRoute />}>
                         <Route path="/admin" element={<Layout />}>
                             <Route path="articles" element={<ArticleList />} />
+                            <Route path="articles/create" element={<ArticleForm />} />
                             <Route path="article/:article_id" element={<Article />} />
                             <Route path="article/:article_id/comments" element={<CommentList />} />
                             <Route path="categories" element={<CategoryList />} />

@@ -53,6 +53,8 @@ class CreateArticleHandler
         try {
             $articleID = $this->articleRepository->save($article);
             $this->updateTopArticles($categories);
+
+            $this->entityManager->commit();
         } catch (Exception $e) {
             $this->entityManager->rollback();
             throw $e;
@@ -67,6 +69,7 @@ class CreateArticleHandler
             ->setShortDescription($command->shortDescription)
             ->setContent($command->content)
             ->setImage($image)
+            ->setNumberOfViews(0)
             ->setCategories($categories)
             ->setCreatedAt(new \DateTime())
             ->setUpdatedAt(new \DateTime());

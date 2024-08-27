@@ -16,7 +16,7 @@ class CreateArticleRequest extends BaseRequest
 
     protected string $content;
 
-    protected int $imageID;
+    protected ?int $imageID;
 
     protected array $categories;
 
@@ -36,7 +36,6 @@ class CreateArticleRequest extends BaseRequest
                 new Type('string')
             ],
             'imageID' => [
-                new NotBlank(),
                 new Type('integer'),
                 new Positive(),
             ],

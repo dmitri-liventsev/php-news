@@ -42,10 +42,14 @@ class CreateArticleHandler
      */
     public function __invoke(CreateArticleCommand $command): ArticleID
     {
-        $image = $this->imageRepository->find($command->imageID);
-        if (!$image) {
-            throw new \Exception('Image not found');
+        $image = null;
+        if ($command->imageID) {
+            $image = $this->imageRepository->find($command->imageID);
+            if (!$image) {
+                throw new \Exception('Image not found');
+            }
         }
+
         $categories = $this->categoryRepository->findByIds($command->categories);
         $article = $this->buildArticle($command, $image, $categories);
 
@@ -63,7 +67,7 @@ class CreateArticleHandler
         return $articleID;
     }
 
-    private function buildArticle(CreateArticleCommand $command, Image $image, array $categories): Article{
+    private function buildArticle(CreateArticleCommand $command, ?Image $image, array $categories): Article{
         $article = new Article();
         $article->setTitle($command->title)
             ->setShortDescription($command->shortDescription)

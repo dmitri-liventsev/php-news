@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress } from '@mui/material';
-import {Category} from "./index";
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress, Typography } from '@mui/material';
+import { Category } from "./index";
 
 interface CategoryFormModalProps {
     open: boolean;
@@ -13,6 +13,7 @@ interface CategoryFormModalProps {
 const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, onSave, title, category }) => {
     const [titleInput, setTitleInput] = useState(category ? category.title : '');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (category) {
@@ -20,10 +21,24 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, on
         }
     }, [category]);
 
+    const validateTitle = (title: string) => {
+        if (title.length < 3 || title.length > 250) {
+            setError('Title must be between 3 and 250 characters');
+            return false;
+        }
+        setError(null);
+        return true;
+    };
+
     const handleSave = async () => {
+        if (!validateTitle(titleInput)) {
+            return;
+        }
+
         setLoading(true);
         try {
             await onSave({ id: category?.id || 0, title: titleInput } as Category);
+            onClose(); // Close modal after saving
         } finally {
             setLoading(false);
         }
@@ -41,12 +56,16 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ open, onClose, on
                     variant="outlined"
                     value={titleInput}
                     onChange={(e) => setTitleInput(e.target.value)}
+                    error={!!error}
+                    helperText={error}
                 />
             </DialogContent>
             <DialogActions>
                 <Button
                     disabled={loading}
-                    onClick={onClose} color="primary">
+                    onClick={onClose}
+                    color="primary"
+                >
                     Cancel
                 </Button>
                 <Button

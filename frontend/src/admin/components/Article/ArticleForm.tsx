@@ -37,6 +37,7 @@ const ArticleForm: React.FC = () => {
     const [imageFileName, setImageFileName] = useState<string | null>(null);
     const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (article) {
@@ -49,8 +50,28 @@ const ArticleForm: React.FC = () => {
         }
     }, [article]);
 
+    const validateForm = () => {
+        const newErrors: { [key: string]: string } = {};
+        if (title.length < 3 || title.length > 250) {
+            newErrors.title = 'Title must be between 3 and 250 characters';
+        }
+        if (shortDescription.length < 3 || shortDescription.length > 250) {
+            newErrors.shortDescription = 'Short description must be between 3 and 250 characters';
+        }
+        if (content.length < 3) {
+            newErrors.content = 'Content must be at least 3 characters long';
+        }
+        if (selectedCategories.length === 0) {
+            newErrors.categories = 'At least one category must be selected';
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         setIsSubmitting(true);
         const articleData = {
             title,
@@ -99,6 +120,8 @@ const ArticleForm: React.FC = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
+                    error={!!errors.title}
+                    helperText={errors.title}
                 />
                 <TextField
                     label="Short Description"
@@ -108,6 +131,8 @@ const ArticleForm: React.FC = () => {
                     value={shortDescription}
                     onChange={(e) => setShortDescription(e.target.value)}
                     required
+                    error={!!errors.shortDescription}
+                    helperText={errors.shortDescription}
                 />
                 <TextField
                     label="Content"
@@ -119,12 +144,14 @@ const ArticleForm: React.FC = () => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
+                    error={!!errors.content}
+                    helperText={errors.content}
                 />
                 <ImageUploader
                     fileName={imageFileName}
                     onChange={handleImageChange}
                 />
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" error={!!errors.categories}>
                     <InputLabel id="categories-select-label">Categories</InputLabel>
                     <Select
                         labelId="categories-select-label"
@@ -158,6 +185,7 @@ const ArticleForm: React.FC = () => {
                             </MenuItem>
                         ))}
                     </Select>
+                    {!!errors.categories && <Typography color="error">{errors.categories}</Typography>}
                 </FormControl>
                 <Button
                     variant="contained"

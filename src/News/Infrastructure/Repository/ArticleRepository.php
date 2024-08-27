@@ -67,6 +67,7 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
         return $this->createQueryBuilder('a')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
+            ->orderBy('a.id', 'DESC')
             ->getQuery()
             ->getResult();
     }

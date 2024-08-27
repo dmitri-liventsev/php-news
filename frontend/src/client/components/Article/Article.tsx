@@ -1,8 +1,8 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, CardContent, Typography, CircularProgress, CardMedia } from '@mui/material';
+import { useParams, Link } from 'react-router-dom';
+import { Card, CardContent, Typography, CardMedia, Box } from '@mui/material';
 import ArticleComments from './ArticleComments';
-import { useFetchArticleCommentsQuery, useFetchArticleQuery } from "../../features/api/apiSlice";
+import { useFetchArticleQuery } from "../../features/api/apiSlice";
 import Loading from "../Util/Loading";
 import { useTranslation } from "react-i18next";
 
@@ -39,6 +39,30 @@ const Article: React.FC = () => {
                             <Typography variant="body2" color="textSecondary">
                                 {t('publishedOn')}: {new Date(article.createdAt).toLocaleDateString()}
                             </Typography>
+                            <Box mt={2}>
+                                <Typography variant="h6">{t('categories')}</Typography>
+                                <Box
+                                    display="flex"
+                                    flexWrap="wrap"
+                                    gap={1}
+                                    mt={1}
+                                >
+                                    {article.categories.map(category => (
+                                        <Link
+                                            key={category.id}
+                                            to={`/category/${category.id}`}
+                                            style={{
+                                                textDecoration: 'none',
+                                                color: '#1976d2',
+                                                fontSize: '1rem',
+                                                marginRight: '10px'
+                                            }}
+                                        >
+                                            {category.title}
+                                        </Link>
+                                    ))}
+                                </Box>
+                            </Box>
                         </CardContent>
                     </Card>
                     <ArticleComments articleId={articleIdInt} />

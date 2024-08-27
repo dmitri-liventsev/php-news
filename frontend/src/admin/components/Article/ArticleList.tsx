@@ -3,6 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useFetchArticlesQuery } from '../../features/api/apiSlice';
 import {CircularProgress, List, Typography} from '@mui/material';
 import ArticleRow from './ArticleRow';
+import Loading from "../Util/Loading";
 
 const ArticleList: React.FC = () => {
     const [page, setPage] = useState(1);
@@ -42,7 +43,7 @@ const ArticleList: React.FC = () => {
                 </Typography>
             )}
 
-            {isFetching  && (<CircularProgress />)}
+            {isFetching  && (<Loading />)}
         </>
     );
 };

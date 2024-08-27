@@ -8,6 +8,7 @@ use App\News\Application\Command\DeleteArticleCommand;
 use App\News\Application\Command\UpdateArticleCommand;
 use App\News\Application\Query\GetArticleByIdQuery;
 use App\News\Application\Query\GetArticlesQuery;
+use App\News\Domain\Entity\Image;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Interface\Http\Admin\Controller\Request\CreateArticleRequest;
 use App\News\Interface\Http\Admin\Controller\Request\CreateImageRequest;
@@ -81,10 +82,11 @@ class AdminArticleController extends AbstractController
 
     public function uploadImage(CreateImageRequest $request): JsonResponse
     {
-        $imageID = $this->handle(CreateImageCommand::fromRequest(
+        /** @var Image $image */
+        $image = $this->handle(CreateImageCommand::fromRequest(
             $request)
         );
 
-        return new JsonResponse(['id' => $imageID], Response::HTTP_OK);
+        return new JsonResponse(['id' => $image->getId()->getValue(), 'file_name' => $image->setFileName()], Response::HTTP_OK);
     }
 }

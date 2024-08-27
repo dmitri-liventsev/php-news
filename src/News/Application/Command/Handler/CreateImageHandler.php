@@ -28,7 +28,7 @@ class CreateImageHandler
         $this->imagesDirectory = $imagesDirectory;
     }
 
-    public function __invoke(CreateImageCommand $command): ImageID
+    public function __invoke(CreateImageCommand $command): Image
     {
         $originalFilename = pathinfo($command->file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
@@ -39,6 +39,8 @@ class CreateImageHandler
         $image = new Image();
         $image->setFilename($newFilename);
 
-        return $this->imageRepository->save($image);
+        $this->imageRepository->save($image);
+
+        return $image;
     }
 }

@@ -7,6 +7,24 @@ interface TokenResponse {
     token: string;
 }
 
+interface CreateCategoryRequest {
+    title: string;
+}
+
+interface CreateCategoryResponse {
+    status: string;
+    category_id: number;
+}
+
+interface UpdateCategoryRequest {
+    id: number;
+    title: string;
+}
+
+interface UpdateCategoryResponse {
+    status: string;
+}
+
 interface ArticlesResponse extends Array<Article> {}
 
 interface CategoriesResponse extends Array<Category> {}
@@ -74,6 +92,22 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Category', id: 'LIST' }],
         }),
+        createCategory: builder.mutation<CreateCategoryResponse, CreateCategoryRequest>({
+            query: (newCategory) => ({
+                url: '/category',
+                method: 'POST',
+                body: newCategory,
+            }),
+            invalidatesTags: [{ type: 'Category', id: 'LIST' }],
+        }),
+        updateCategory: builder.mutation<UpdateCategoryResponse, UpdateCategoryRequest>({
+            query: ({ id, title }) => ({
+                url: `/category/${id}`,
+                method: 'PUT',
+                body: { title },
+            }),
+            invalidatesTags: [{ type: 'Category', id: 'LIST' }],
+        }),
         fetchComments: builder.query<CommentsResponse, number>({
             query: (articleId) => `/article/${articleId}/comments`,
             providesTags: (result) => result ? [{ type: 'Comment', id: 'LIST' }] : [],
@@ -94,6 +128,8 @@ export const {
     useFetchCommentsQuery,
     useDeleteArticleMutation,
     useDeleteCategoryMutation,
+    useCreateCategoryMutation,
+    useUpdateCategoryMutation,
     useDeleteCommentMutation,
     useLoginMutation,
 } = apiSlice;

@@ -30,10 +30,6 @@ class AdminCommentController extends AbstractController
         $articleID = new ArticleID($article_id);
         $comments = $this->handle(new GetCommentsByArticleQuery($articleID));
 
-        if (empty($comments)) {
-            return new JsonResponse(['message' => 'No comments found for this article'], Response::HTTP_NOT_FOUND);
-        }
-
         return $this->json($comments);
     }
 

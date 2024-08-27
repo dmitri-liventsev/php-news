@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useFetchArticlesQuery } from '../../features/api/apiSlice';
-import { CircularProgress, List } from '@mui/material';
+import {CircularProgress, List, Typography} from '@mui/material';
 import ArticleRow from './ArticleRow';
 
 const ArticleList: React.FC = () => {
@@ -17,6 +17,8 @@ const ArticleList: React.FC = () => {
     useEffect(() => {
         setPage(1);
     }, []);
+
+    const noArticles = articles?.length === 0 && !isFetching && page === 1;
 
     return (
         <>
@@ -34,7 +36,13 @@ const ArticleList: React.FC = () => {
                 </List>
             </InfiniteScroll>
 
-            {isLoading  && (<CircularProgress />)}
+            {noArticles && (
+                <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+                    No articles found
+                </Typography>
+            )}
+
+            {isFetching  && (<CircularProgress />)}
         </>
     );
 };

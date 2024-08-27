@@ -44,10 +44,6 @@ class AdminCategoryController extends AbstractController
     {
         $categories = $this->handle(new GetCategoriesQuery());
 
-        if (empty($categories)) {
-            return new JsonResponse(['error' => 'No articles found'], Response::HTTP_NOT_FOUND);
-        }
-
         return $this->json($categories);
     }
 

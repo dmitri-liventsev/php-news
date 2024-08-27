@@ -16,7 +16,7 @@ const Layout: React.FC = () => {
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" style={{flexGrow: 1}}>
-                        <Link to="/admin" style={{color: 'inherit', textDecoration: 'none'}}>
+                        <Link to="/admin/articles" style={{color: 'inherit', textDecoration: 'none'}}>
                             Articles
                         </Link>
                     </Typography>

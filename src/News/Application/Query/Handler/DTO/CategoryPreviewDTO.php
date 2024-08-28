@@ -2,7 +2,6 @@
 
 namespace App\News\Application\Query\Handler\DTO;
 
-use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Category;
 
 class CategoryPreviewDTO

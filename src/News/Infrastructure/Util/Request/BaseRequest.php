@@ -4,7 +4,6 @@ namespace App\News\Infrastructure\Util\Request;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints\Collection;
@@ -22,7 +21,7 @@ abstract class BaseRequest
 
     protected abstract function getRules(): array;
 
-    public function validate()
+    public function validate(): void
     {
         $validator = Validation::createValidator();
         $rules = $this->getRules();
@@ -36,7 +35,6 @@ abstract class BaseRequest
 
         $messages = ['message' => 'validation_failed', 'errors' => []];
 
-        /** @var \Symfony\Component\Validator\ConstraintViolation  */
         foreach ($errors as $message) {
             $messages['errors'][] = [
                 'property' => $message->getPropertyPath(),

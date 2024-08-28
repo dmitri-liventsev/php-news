@@ -18,8 +18,8 @@ class CreateUserCommand extends Command
         return self::$defaultName;
     }
 
-    private $em;
-    private $passwordEncoder;
+    private EntityManagerInterface $em;
+    private UserPasswordHasherInterface $passwordEncoder;
 
     public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordEncoder)
     {
@@ -28,7 +28,7 @@ class CreateUserCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Creates a new user.')

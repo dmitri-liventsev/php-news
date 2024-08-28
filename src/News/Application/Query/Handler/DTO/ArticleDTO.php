@@ -34,10 +34,10 @@ class ArticleDTO implements JsonSerializable
         );
         $this->createdAt = $article->getCreatedAt()->format('c');
         $this->updatedAt = $article->getUpdatedAt()->format('c');
-        $this->deletedAt = $article->getDeletedAt() ? $article->getDeletedAt()->format('c') : null;
+        $this->deletedAt = $article->getDeletedAt()?->format('c');
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

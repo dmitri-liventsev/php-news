@@ -7,6 +7,7 @@ use App\News\Domain\Entity\Article;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\Repository\ImageRepositoryInterface;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use PharIo\Version\Exception;
 
@@ -67,7 +68,7 @@ class UpdateArticleHandler
         }
         $categories = $this->categoryRepository->findByIds($command->categories);
         $article->setCategories($categories);
-        $article->setUpdatedAt(new \DateTime());
+        $article->setUpdatedAt(new DateTime());
 
         return $article;
     }

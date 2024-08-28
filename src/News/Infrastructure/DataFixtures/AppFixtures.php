@@ -5,6 +5,7 @@ namespace App\News\Infrastructure\DataFixtures;
 use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Category;
 use App\News\Domain\Entity\Image;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -42,8 +43,8 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 3; $i++) {
             $category = new Category();
             $category->setTitle($faker->word);
-            $category->setCreatedAt(new \DateTime());
-            $category->setUpdatedAt(new \DateTime());
+            $category->setCreatedAt(new DateTime());
+            $category->setUpdatedAt(new DateTime());
             $category->setDeletedAt(null);
 
             $manager->persist($category);
@@ -54,8 +55,8 @@ class AppFixtures extends Fixture
         foreach($this->PhotoOfHumanitysOwners as $fileName) {
             $image = new Image();
             $image->setFileName($fileName);
-            $image->setCreatedAt(new \DateTime());
-            $image->setUpdatedAt(new \DateTime());
+            $image->setCreatedAt(new DateTime());
+            $image->setUpdatedAt(new DateTime());
             $image->setDeletedAt(null);
 
             $manager->persist($image);
@@ -65,11 +66,11 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 20; $i++) {
             $article = new Article();
             $article->setTitle($faker->sentence);
-            $article->setShortDescription($faker->text(200));
+            $article->setShortDescription($faker->text());
             $article->setContent($faker->text(1000));
             $article->setNumberOfViews($faker->numberBetween(0, 1000));
-            $article->setCreatedAt(new \DateTime());
-            $article->setUpdatedAt(new \DateTime());
+            $article->setCreatedAt(new DateTime());
+            $article->setUpdatedAt(new DateTime());
             $article->setDeletedAt(null);
             $article->setIsTop($faker->boolean);
 

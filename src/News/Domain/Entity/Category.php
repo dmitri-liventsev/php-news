@@ -3,6 +3,7 @@
 namespace App\News\Domain\Entity;
 
 use App\News\Domain\ValueObject\CategoryID;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -26,13 +27,13 @@ class Category
     private Collection $articles;
 
     #[ORM\Column(name: 'created_at', type: 'datetime')]
-    private \DateTimeInterface $createdAt;
+    private DateTimeInterface $createdAt;
 
     #[ORM\Column(name: 'updated_at', type: 'datetime')]
-    private \DateTimeInterface $updatedAt;
+    private DateTimeInterface $updatedAt;
 
     #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $deletedAt = null;
+    private ?DateTimeInterface $deletedAt = null;
 
     public function __construct()
     {
@@ -61,34 +62,34 @@ class Category
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTimeInterface
+    public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
     }
 
-    public function getDeletedAt(): ?\DateTimeInterface
+    public function getDeletedAt(): ?DateTimeInterface
     {
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
+    public function setDeletedAt(?DateTimeInterface $deletedAt): self
     {
         $this->deletedAt = $deletedAt;
         return $this;
@@ -97,7 +98,7 @@ class Category
     /**
      * @return Collection|Article[]
      */
-    public function getArticles(): Collection
+    public function getArticles(): Collection | array
     {
         return $this->articles;
     }

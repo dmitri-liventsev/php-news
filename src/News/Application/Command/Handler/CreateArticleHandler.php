@@ -3,20 +3,18 @@
 namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\CreateArticleCommand;
-use App\News\Application\Query\Handler\DTO\CategoryPreviewDTO;
 use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Image;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\Repository\ImageRepositoryInterface;
 use App\News\Domain\ValueObject\ArticleID;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use PharIo\Version\Exception;
 
 class CreateArticleHandler
 {
-    const NUM_OF_TOP_ARTICLES = 3;
-
     private ArticleRepositoryInterface $articleRepository;
 
     private CategoryRepositoryInterface $categoryRepository;
@@ -37,10 +35,6 @@ class CreateArticleHandler
         $this->entityManager = $entityManager;
     }
 
-
-    /**
-     * @throws \Exception
-     */
     public function __invoke(CreateArticleCommand $command): ArticleID
     {
         $image = null;
@@ -76,8 +70,8 @@ class CreateArticleHandler
             ->setImage($image)
             ->setNumberOfViews(0)
             ->setCategories($categories)
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime());
 
         return $article;
     }

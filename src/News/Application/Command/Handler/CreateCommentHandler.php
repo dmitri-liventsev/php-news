@@ -7,15 +7,13 @@ use App\News\Domain\Entity\Comment;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\Repository\CommentRepositoryInterface;
 use App\News\Domain\ValueObject\CommentID;
+use DateTime;
 
 class CreateCommentHandler
 {
     private CommentRepositoryInterface $commentRepository;
     private ArticleRepositoryInterface $articleRepository;
 
-    /**
-     * @param CommentRepositoryInterface $commentRepository
-     */
     public function __construct(CommentRepositoryInterface $commentRepository, ArticleRepositoryInterface $articleRepository)
     {
         $this->commentRepository = $commentRepository;
@@ -35,8 +33,8 @@ class CreateCommentHandler
         $comment->setAuthor($command->author)
             ->setContent($command->content)
             ->setArticle($article)
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime());
 
         return $comment;
     }

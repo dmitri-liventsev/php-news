@@ -2,7 +2,6 @@
 
 namespace App\News\Infrastructure\Repository;
 
-use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Category;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\ValueObject\CategoryID;

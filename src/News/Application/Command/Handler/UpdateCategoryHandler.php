@@ -4,6 +4,7 @@ namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\UpdateCategoryCommand;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
+use DateTime;
 
 class UpdateCategoryHandler
 {
@@ -22,7 +23,7 @@ class UpdateCategoryHandler
         }
 
         $category->setTitle($command->title);
-        $category->setUpdatedAt(new \DateTime());
+        $category->setUpdatedAt(new DateTime());
 
         $this->categoryRepository->save($category);
     }

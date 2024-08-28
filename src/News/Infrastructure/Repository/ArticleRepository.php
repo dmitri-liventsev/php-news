@@ -3,6 +3,7 @@
 namespace App\News\Infrastructure\Repository;
 
 use App\News\Domain\Entity\Article;
+use App\News\Domain\Entity\User;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\CategoryID;
@@ -10,6 +11,7 @@ use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ArticleRepository extends ServiceEntityRepository implements ArticleRepositoryInterface
@@ -72,17 +74,33 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
             ->getResult();
     }
 
-    public function resetTopArticlesByCategory($categoryID): void
+    public function resetTopArticlesByCategory(CategoryID $categoryID): void
     {
-        $qb = $this->createQueryBuilder('a')
-            ->update()
-            ->set('a.isTop', ':isTop')
-            ->where(':categoryID MEMBER OF a.categories')
-            ->setParameter('isTop', false)
-            ->setParameter('categoryID', $categoryID)
-            ->getQuery();
+        $currentTopArticles = $this->createQueryBuilder('a')
+            ->innerJoin('a.categories', 'c')
+            ->where('c.id = :categoryID')
+            ->setParameter('categoryID', $categoryID->getValue())
+            ->andWhere('a.isTop = :isTop')
+            ->setParameter('isTop', true)
+            ->getQuery()
+            ->getResult();
 
-        $qb->execute();
+        $articleIds = [];
+        foreach ($currentTopArticles as $currentTopArticle) {
+            $articleIds[] = $currentTopArticle->getId()->getValue();
+        }
+        if (empty($articleIds)) {
+            return;
+        }
+
+        $this->getEntityManager()->createQueryBuilder()
+            ->update(Article::class, 'a')
+            ->set('a.isTop', ':isTop')
+            ->where('a.id IN (:articleIds)')
+            ->setParameter('articleIds', $articleIds)
+            ->setParameter('isTop', false)
+            ->getQuery()
+            ->execute();
     }
 
     /**
@@ -90,7 +108,7 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
      * @param int $limit
      * @return Collection|Article[]
      */
-    public function findTopArticlesByCategory(CategoryID $categoryID, int $limit): array
+    public function findTopArticlesByCategory(CategoryID $categoryID, int $limit = 3): array
     {
         return $this->createQueryBuilder('a')
             ->where(':categoryID MEMBER OF a.categories')
@@ -99,6 +117,37 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function refreshTopArticlesByCategory(CategoryID $categoryID, int $limit = 3): void
+    {
+        $topArticles = $this->findTopArticlesByCategory($categoryID, $limit);
+        if (empty($topArticles)) {
+            return;
+        }
+        $articleIds = [];
+        foreach ($topArticles as $currentTopArticle) {
+            $articleIds[] = $currentTopArticle->getId()->getValue();
+        }
+
+        $this->getEntityManager()->createQueryBuilder()
+            ->update(Article::class, 'a')
+            ->set('a.isTop', ':isTop')
+            ->where('a.id IN (:articleIds)')
+            ->setParameter('articleIds', $articleIds)
+            ->setParameter('isTop', true)
+            ->getQuery()
+            ->execute();
+
+        $this->getEntityManager()->createQueryBuilder()
+            ->update(Article::class, 'a')
+            ->set('a.isTop', ':isTop')
+            ->where('a.id NOT IN (:articleIds)')
+            ->setParameter('articleIds', $articleIds)
+            ->setParameter('isTop', false)
+            ->getQuery()
+            ->execute();
+
     }
 
     public function increaseNumberOfView(ArticleID $articleID): void

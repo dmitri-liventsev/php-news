@@ -12,7 +12,6 @@ class DeleteArticleHandler
     {
         $this->articleRepository = $articleRepository;
     }
-
     public function __invoke(DeleteArticleCommand $command): void
     {
         $this->articleRepository->deleteById($command->articleId);

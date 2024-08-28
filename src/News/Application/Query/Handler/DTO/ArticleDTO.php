@@ -3,8 +3,9 @@
 namespace App\News\Application\Query\Handler\DTO;
 
 use App\News\Domain\Entity\Article;
+use JsonSerializable;
 
-class ArticleDTO
+class ArticleDTO implements JsonSerializable
 {
     public int $id;
     public string $title;
@@ -34,5 +35,19 @@ class ArticleDTO
         $this->createdAt = $article->getCreatedAt()->format('c');
         $this->updatedAt = $article->getUpdatedAt()->format('c');
         $this->deletedAt = $article->getDeletedAt() ? $article->getDeletedAt()->format('c') : null;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'shortDescription' => $this->shortDescription,
+            'content' => $this->content,
+            'image' => $this->image,
+            'numberOfViews' => $this->numberOfViews,
+            'isTop' => $this->isTop,
+            'categories' => $this->categories
+        ];
     }
 }

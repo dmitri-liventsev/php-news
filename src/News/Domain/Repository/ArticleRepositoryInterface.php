@@ -18,7 +18,7 @@ interface ArticleRepositoryInterface
     public function findByCategoryWithPagination(CategoryID $categoryID, int $limit, int$offset): array;
     public function findWithPagination(int $limit, int$offset): array;
 
-    public function resetTopArticlesByCategory($categoryID): void;
+    public function resetTopArticlesByCategory(CategoryID $categoryID): void;
 
     public function findTopArticlesByCategory(CategoryID $categoryID, int $limit): array;
 

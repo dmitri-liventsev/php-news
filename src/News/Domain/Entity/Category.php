@@ -22,7 +22,7 @@ class Category
     /**
      * @var Collection|Article[]
      */
-    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories', cascade: ['remove'])]
+    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories')]
     private Collection $articles;
 
     #[ORM\Column(name: 'created_at', type: 'datetime')]

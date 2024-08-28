@@ -3,6 +3,7 @@
 namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\CreateArticleCommand;
+use App\News\Application\Query\Handler\DTO\CategoryPreviewDTO;
 use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Image;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
@@ -84,13 +85,7 @@ class CreateArticleHandler
     private function updateTopArticles(array $categories): void
     {
         foreach ($categories as $category) {
-            $this->articleRepository->resetTopArticlesByCategory($category->getId());
-            $topArticles = $this->articleRepository->findTopArticlesByCategory($category->getId(), self::NUM_OF_TOP_ARTICLES);
-
-            foreach ($topArticles as $article) {
-                $article->setIsTop(true);
-                $this->articleRepository->save($article);
-            }
+            $this->articleRepository->refreshTopArticlesByCategory($category->getId());
         }
     }
 }

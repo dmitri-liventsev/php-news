@@ -23,6 +23,10 @@ doctrine:
                 alias: AppNews
         controller_resolver:
             auto_mapping: false
+        filters:
+            soft_delete:
+                class: App\News\Infrastructure\Doctrine\SoftDeleteFilter
+                enabled: true
 
 when@test:
     doctrine:

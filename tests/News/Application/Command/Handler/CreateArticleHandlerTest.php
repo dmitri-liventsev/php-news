@@ -49,7 +49,10 @@ class CreateArticleHandlerTest extends TestCase
             $this->imageRepository,
         );
 
-        $this->entityManager->createQuery('DELETE FROM App\News\Domain\Entity\Article')->execute();
+        $connection = $this->entityManager->getConnection();
+        $connection->executeStatement('DELETE FROM comment');
+        $connection->executeStatement('DELETE FROM article_category');
+        $connection->executeStatement('DELETE FROM article');
 
         $category = CategoryHelper::buildCategory();
         $this->categoryRepository->save($category);

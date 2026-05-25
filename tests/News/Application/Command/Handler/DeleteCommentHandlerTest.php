@@ -43,15 +43,18 @@ class DeleteCommentHandlerTest extends KernelTestCase
         $comment = CommentHelper::buildComment($article);
         $this->articleRepository->save($article);
 
-        $this->assertNotNull($this->commentRepository->findById($comment->getId()));
+        $commentID = $comment->getId();
+        $articleID = $article->getId();
 
-        $command = new DeleteCommentCommand($comment->getId());
+        $this->assertNotNull($this->commentRepository->findById($commentID));
+
+        $command = new DeleteCommentCommand($commentID);
 
         ($this->handler)($command);
         $this->entityManager->clear();
 
-        $article = $this->articleRepository->findById($article->getId());
-        $deletedComment = $this->commentRepository->findById($comment->getId());
+        $article = $this->articleRepository->findById($articleID);
+        $deletedComment = $this->commentRepository->findById($commentID);
 
         $this->assertNull($deletedComment, 'Comment was not deleted.');
         $this->assertNotNull($article, 'Article was deleted.');

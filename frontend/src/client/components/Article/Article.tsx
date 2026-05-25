@@ -24,7 +24,7 @@ const Article: React.FC = () => {
     const firstCategory = article?.categories?.[0];
 
     return (
-        <div style={{ padding: '16px' }}>
+        <div>
             {article && (
                 <>
                     <Breadcrumbs
@@ -35,7 +35,7 @@ const Article: React.FC = () => {
                             { label: article.title },
                         ]}
                     />
-                    <Card style={{ marginBottom: '16px' }}>
+                    <Card sx={{ width: '100%', mb: 2 }}>
                         <CardContent>
                             {article.image && (
                                 <CardMedia

@@ -17,25 +17,25 @@ const Category: React.FC = () => {
     const [hasMore, setHasMore] = useState(true);
     const [articles, setArticles] = useState<Article[]>([]);
 
-    const { data, error, isFetching, refetch } = useFetchArticlesByCategoryQuery(
+    const { data, error, isFetching } = useFetchArticlesByCategoryQuery(
         { categoryId: categoryIdInt, page },
         { skip: !categoryIdInt }
     );
 
     useEffect(() => {
-        // Reset state and fetch data when categoryId changes
         setArticles([]);
         setPage(1);
         setHasMore(true);
-        refetch();
-    }, [categoryId, refetch]);
+    }, [categoryId]);
 
     useEffect(() => {
-        if (data?.articles) {
-            setArticles(prevArticles => [...prevArticles, ...data.articles]);
-            // Check if there's more data to load
-            setHasMore(data.articles.length >= 10);
-        }
+        if (!data?.articles) return;
+        setArticles(prev => {
+            const seen = new Set(prev.map(a => a.id));
+            const fresh = data.articles.filter(a => !seen.has(a.id));
+            return [...prev, ...fresh];
+        });
+        setHasMore(data.articles.length >= 10);
     }, [data]);
 
     const fetchMoreData = () => {

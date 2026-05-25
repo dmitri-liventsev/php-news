@@ -42,6 +42,9 @@ final readonly class CategoryFinder implements CategoryFinderInterface
             ->leftJoin('a.image', 'i')
             ->where('a.isTop = :isTop')
             ->setParameter('isTop', true)
+            ->orderBy('c.id', 'ASC')
+            ->addOrderBy('a.createdAt', 'DESC')
+            ->addOrderBy('a.id', 'DESC')
             ->getQuery()
             ->getArrayResult();
     }

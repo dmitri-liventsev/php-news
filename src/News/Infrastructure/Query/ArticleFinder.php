@@ -49,6 +49,8 @@ final readonly class ArticleFinder implements ArticleFinderInterface
             ->innerJoin('a.categories', 'c')
             ->where('c.id = :categoryID')
             ->setParameter('categoryID', $categoryID->value)
+            ->orderBy('a.createdAt', 'DESC')
+            ->addOrderBy('a.id', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()

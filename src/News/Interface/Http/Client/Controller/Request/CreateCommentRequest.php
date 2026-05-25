@@ -2,6 +2,8 @@
 
 namespace App\News\Interface\Http\Client\Controller\Request;
 
+use App\News\Application\Command\CreateCommentCommand;
+use App\News\Domain\ValueObject\ArticleID;
 use App\News\Infrastructure\Util\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -13,7 +15,7 @@ class CreateCommentRequest extends BaseRequest
 
     protected string $author;
 
-    protected function getRules(): array
+    public function getRules(): array
     {
         return [
             'content' => [
@@ -33,19 +35,22 @@ class CreateCommentRequest extends BaseRequest
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getContent(): string
     {
         return $this->content;
     }
 
-    /**
-     * @return string
-     */
     public function getAuthor(): string
     {
         return $this->author;
+    }
+
+    public function toCommand(int $articleID): CreateCommentCommand
+    {
+        return new CreateCommentCommand(
+            new ArticleID($articleID),
+            $this->getContent(),
+            $this->getAuthor(),
+        );
     }
 }

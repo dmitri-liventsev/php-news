@@ -37,8 +37,8 @@ class UpdateCategoryHandlerTest extends KernelTestCase
         ($this->handler)($command);
         $this->entityManager->clear();
 
-        $updatedCategory = $this->categoryRepository->find($category->getId()->getValue());
-        $this->assertEquals($newTitle, $updatedCategory->getTitle(), 'Category title was not updated.');
+        $updatedCategory = $this->categoryRepository->find($category->getId()->value);
+        $this->assertSame($newTitle, $updatedCategory->getTitle()->value, 'Category title was not updated.');
         $this->assertNotEquals($originalUpdatedAt, $updatedCategory->getUpdatedAt(), 'Category updatedAt was not updated.');
     }
 }

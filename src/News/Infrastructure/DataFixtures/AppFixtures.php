@@ -5,7 +5,11 @@ namespace App\News\Infrastructure\DataFixtures;
 use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Category;
 use App\News\Domain\Entity\Image;
-use DateTime;
+use App\News\Domain\ValueObject\ArticleContent;
+use App\News\Domain\ValueObject\ArticleTitle;
+use App\News\Domain\ValueObject\CategoryTitle;
+use App\News\Domain\ValueObject\ImageFileName;
+use App\News\Domain\ValueObject\ShortDescription;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -41,44 +45,34 @@ class AppFixtures extends Fixture
 
         $categories = [];
         for ($i = 0; $i < 3; $i++) {
-            $category = new Category();
-            $category->setTitle($faker->word);
-            $category->setCreatedAt(new DateTime());
-            $category->setUpdatedAt(new DateTime());
-            $category->setDeletedAt(null);
-
+            $category = Category::create(new CategoryTitle($faker->word));
             $manager->persist($category);
             $categories[] = $category;
         }
 
         $images = [];
-        foreach($this->PhotoOfHumanitysOwners as $fileName) {
-            $image = new Image();
-            $image->setFileName($fileName);
-            $image->setCreatedAt(new DateTime());
-            $image->setUpdatedAt(new DateTime());
-            $image->setDeletedAt(null);
-
+        foreach ($this->PhotoOfHumanitysOwners as $fileName) {
+            $image = Image::create(new ImageFileName($fileName));
             $manager->persist($image);
             $images[] = $image;
         }
 
         for ($i = 0; $i < 20; $i++) {
-            $article = new Article();
-            $article->setTitle($faker->sentence);
-            $article->setShortDescription($faker->text());
-            $article->setContent($faker->text(1000));
-            $article->setNumberOfViews($faker->numberBetween(0, 1000));
-            $article->setCreatedAt(new DateTime());
-            $article->setUpdatedAt(new DateTime());
-            $article->setDeletedAt(null);
-            $article->setIsTop($faker->boolean);
+            $article = Article::create(
+                new ArticleTitle($faker->sentence),
+                new ShortDescription($faker->text()),
+                new ArticleContent($faker->text(1000)),
+                $images[array_rand($images)],
+                $faker->randomElements($categories, 2),
+            );
 
-            $randomKey = array_rand($images);
-            $article->setImage($images[$randomKey]);
+            $views = $faker->numberBetween(0, 1000);
+            for ($v = 0; $v < $views; $v++) {
+                $article->incrementViews();
+            }
 
-            foreach ($faker->randomElements($categories, 2) as $category) {
-                $article->addCategory($category);
+            if ($faker->boolean) {
+                $article->markAsTop();
             }
 
             $manager->persist($article);

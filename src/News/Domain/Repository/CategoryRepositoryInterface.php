@@ -9,11 +9,13 @@ interface CategoryRepositoryInterface
 {
     public function findById(CategoryID $categoryID): ?Category;
 
+    /**
+     * @param int[] $ids
+     * @return Category[]
+     */
     public function findByIds(array $ids): array;
 
     public function save(Category $category): CategoryID;
 
     public function deleteById(CategoryID $categoryID): void;
-
-    public function findCategoriesWithTopArticles(): array;
 }

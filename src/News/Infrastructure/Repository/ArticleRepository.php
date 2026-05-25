@@ -3,15 +3,10 @@
 namespace App\News\Infrastructure\Repository;
 
 use App\News\Domain\Entity\Article;
-
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\CategoryID;
-use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ArticleRepository extends ServiceEntityRepository implements ArticleRepositoryInterface
@@ -31,7 +26,7 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
 
     public function deleteById(ArticleID $articleID): void
     {
-        $article = $this->find($articleID->getValue());
+        $article = $this->find($articleID->value);
 
         if (!$article) {
             return;
@@ -41,130 +36,32 @@ class ArticleRepository extends ServiceEntityRepository implements ArticleReposi
         $this->getEntityManager()->flush();
     }
 
-    public function findByCategoryWithPagination(CategoryID $categoryID, int $limit, int $offset): array
+    public function findById(ArticleID $articleID): ?Article
+    {
+        return $this->find($articleID->value);
+    }
+
+    public function findLatestByCategory(CategoryID $categoryID, int $limit): array
     {
         return $this->createQueryBuilder('a')
             ->innerJoin('a.categories', 'c')
             ->where('c.id = :categoryID')
-            ->setParameter('categoryID', $categoryID->getValue())
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findWithPagination(int $limit, int $offset): array
-    {
-        return $this->createQueryBuilder('a')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('a.id', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function resetTopArticlesByCategory(CategoryID $categoryID): void
-    {
-        $currentTopArticles = $this->createQueryBuilder('a')
-            ->innerJoin('a.categories', 'c')
-            ->where('c.id = :categoryID')
-            ->setParameter('categoryID', $categoryID->getValue())
-            ->andWhere('a.isTop = :isTop')
-            ->setParameter('isTop', true)
-            ->getQuery()
-            ->getResult();
-
-        $articleIds = [];
-        foreach ($currentTopArticles as $currentTopArticle) {
-            $articleIds[] = $currentTopArticle->getId()->getValue();
-        }
-        if (empty($articleIds)) {
-            return;
-        }
-
-        $this->getEntityManager()->createQueryBuilder()
-            ->update(Article::class, 'a')
-            ->set('a.isTop', ':isTop')
-            ->where('a.id IN (:articleIds)')
-            ->setParameter('articleIds', $articleIds)
-            ->setParameter('isTop', false)
-            ->getQuery()
-            ->execute();
-    }
-
-    public function findTopArticlesByCategory(CategoryID $categoryID, int $limit = 3): array
-    {
-        return $this->createQueryBuilder('a')
-            ->where(':categoryID MEMBER OF a.categories')
-            ->setParameter('categoryID', $categoryID)
+            ->setParameter('categoryID', $categoryID->value)
             ->orderBy('a.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
 
-    public function refreshTopArticlesByCategory(CategoryID $categoryID, int $limit = 3): void
+    public function findCurrentTopByCategory(CategoryID $categoryID): array
     {
-        $topArticles = $this->findTopArticlesByCategory($categoryID, $limit);
-        if (empty($topArticles)) {
-            return;
-        }
-        $articleIds = [];
-        foreach ($topArticles as $currentTopArticle) {
-            $articleIds[] = $currentTopArticle->getId()->getValue();
-        }
-
-        $this->getEntityManager()->createQueryBuilder()
-            ->update(Article::class, 'a')
-            ->set('a.isTop', ':isTop')
-            ->where('a.id IN (:articleIds)')
-            ->setParameter('articleIds', $articleIds)
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.categories', 'c')
+            ->where('c.id = :categoryID')
+            ->andWhere('a.isTop = :isTop')
+            ->setParameter('categoryID', $categoryID->value)
             ->setParameter('isTop', true)
             ->getQuery()
-            ->execute();
-
-        $this->getEntityManager()->createQueryBuilder()
-            ->update(Article::class, 'a')
-            ->set('a.isTop', ':isTop')
-            ->where('a.id NOT IN (:articleIds)')
-            ->setParameter('articleIds', $articleIds)
-            ->setParameter('isTop', false)
-            ->getQuery()
-            ->execute();
-
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function increaseNumberOfView(ArticleID $articleID): void
-    {
-        $connection = $this->getEntityManager()->getConnection();
-
-        $sql = 'UPDATE article SET number_of_views = number_of_views + 1 WHERE id = :id';
-        $statement = $connection->prepare($sql);
-        $statement->bindValue('id', $articleID->getValue());
-        $statement->executeStatement();
-    }
-
-    /**
-     * @param DateTimeInterface $from
-     * @param int $limit
-     * @return Article[]
-     */
-    public function findTopArticles(DateTimeInterface $from, int $limit): array
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->where('a.createdAt >= :from')
-            ->setParameter('from', $from)
-            ->orderBy('a.numberOfViews', 'DESC')
-            ->setMaxResults($limit);
-
-        return $qb->getQuery()->getResult();
-    }
-
-    public function findById(ArticleID $articleID)
-    {
-        return $this->find($articleID->getValue());
+            ->getResult();
     }
 }

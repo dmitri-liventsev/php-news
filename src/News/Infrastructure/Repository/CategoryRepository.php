@@ -18,7 +18,7 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
     public function findById(CategoryID $categoryID): ?Category {
         return $this->createQueryBuilder('c')
             ->andWhere('c.id = :id')
-            ->setParameter('id', $categoryID->getValue())
+            ->setParameter('id', $categoryID->value)
             ->getQuery()->getOneOrNullResult();
     }
 
@@ -53,21 +53,5 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
 
         $this->getEntityManager()->remove($category);
         $this->getEntityManager()->flush();
-    }
-
-    /**
-     * @return Category[]
-     */
-    public function findCategoriesWithTopArticles(): array
-    {
-        return $this->createQueryBuilder('c')
-            ->leftJoin('c.articles', 'a')
-            ->leftJoin('a.image', 'i')
-            ->addSelect('a')
-            ->addSelect('i')
-            ->where('a.isTop = :isTop')
-            ->setParameter('isTop', true)
-            ->getQuery()
-            ->getArrayResult();
     }
 }

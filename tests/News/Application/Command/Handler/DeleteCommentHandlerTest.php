@@ -4,8 +4,6 @@ namespace App\Tests\News\Application\Command\Handler;
 
 use App\News\Application\Command\DeleteCommentCommand;
 use App\News\Application\Command\Handler\DeleteCommentHandler;
-use App\News\Domain\Entity\Article;
-use App\News\Domain\Entity\Comment;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\Repository\CommentRepositoryInterface;
@@ -32,7 +30,7 @@ class DeleteCommentHandlerTest extends KernelTestCase
         $this->categoryRepository = self::getContainer()->get(CategoryRepositoryInterface::class);
         $this->entityManager = $this->getContainer()->get('doctrine')->getManager();
 
-        $this->handler = new DeleteCommentHandler($this->commentRepository);
+        $this->handler = new DeleteCommentHandler($this->commentRepository, $this->articleRepository);
     }
 
     public function testDeleteComment(): void
@@ -43,9 +41,9 @@ class DeleteCommentHandlerTest extends KernelTestCase
         $this->articleRepository->save($article);
 
         $comment = CommentHelper::buildComment($article);
-        $this->commentRepository->save($comment);
+        $this->articleRepository->save($article);
 
-        $this->assertNotNull($this->commentRepository->findById($comment->getId()->getValue()));
+        $this->assertNotNull($this->commentRepository->findById($comment->getId()));
 
         $command = new DeleteCommentCommand($comment->getId());
 
@@ -53,7 +51,7 @@ class DeleteCommentHandlerTest extends KernelTestCase
         $this->entityManager->clear();
 
         $article = $this->articleRepository->findById($article->getId());
-        $deletedComment = $this->commentRepository->find($comment->getId()->getValue());
+        $deletedComment = $this->commentRepository->findById($comment->getId());
 
         $this->assertNull($deletedComment, 'Comment was not deleted.');
         $this->assertNotNull($article, 'Article was deleted.');

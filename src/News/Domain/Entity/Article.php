@@ -2,7 +2,20 @@
 
 namespace App\News\Domain\Entity;
 
+use App\News\Domain\Event\ArticleCreated;
+use App\News\Domain\Event\ArticleMarkedAsTop;
+use App\News\Domain\Event\ArticleUnmarkedFromTop;
+use App\News\Domain\Event\ArticleViewed;
+use App\News\Domain\Event\RecordsDomainEvents;
+use App\News\Domain\Event\RecordsDomainEventsTrait;
+use App\News\Domain\ValueObject\ArticleContent;
 use App\News\Domain\ValueObject\ArticleID;
+use App\News\Domain\ValueObject\ArticleTitle;
+use App\News\Domain\ValueObject\CommentAuthor;
+use App\News\Domain\ValueObject\CommentContent;
+use App\News\Domain\ValueObject\CommentID;
+use App\News\Domain\ValueObject\ShortDescription;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,8 +23,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'article')]
-class Article
+#[ORM\HasLifecycleCallbacks]
+class Article implements RecordsDomainEvents
 {
+    use RecordsDomainEventsTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
@@ -53,13 +69,138 @@ class Article
     #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $deletedAt = null;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $comments;
 
-    public function __construct()
+    private function __construct()
     {
         $this->categories = new ArrayCollection();
-        $this->isTop = false; // Значение по умолчанию
+        $this->comments = new ArrayCollection();
+        $this->isTop = false;
+        $this->numberOfViews = 0;
+    }
+
+    /**
+     * @param iterable<Category> $categories
+     */
+    public static function create(
+        ArticleTitle $title,
+        ShortDescription $shortDescription,
+        ArticleContent $content,
+        ?Image $image,
+        iterable $categories,
+    ): self {
+        $now = new DateTime();
+
+        $article = new self();
+        $article->title = $title->value;
+        $article->shortDescription = $shortDescription->value;
+        $article->content = $content->value;
+        $article->image = $image;
+        $article->createdAt = $now;
+        $article->updatedAt = $now;
+
+        foreach ($categories as $category) {
+            if (!$article->categories->contains($category)) {
+                $article->categories[] = $category;
+            }
+        }
+
+        return $article;
+    }
+
+    public function rename(ArticleTitle $title): void
+    {
+        $this->title = $title->value;
+        $this->touch();
+    }
+
+    public function changeShortDescription(ShortDescription $shortDescription): void
+    {
+        $this->shortDescription = $shortDescription->value;
+        $this->touch();
+    }
+
+    public function rewriteContent(ArticleContent $content): void
+    {
+        $this->content = $content->value;
+        $this->touch();
+    }
+
+    public function changeImage(?Image $image): void
+    {
+        $this->image = $image;
+        $this->touch();
+    }
+
+    public function assignToCategories(Category ...$categories): void
+    {
+        $this->categories->clear();
+        foreach ($categories as $category) {
+            if (!$this->categories->contains($category)) {
+                $this->categories[] = $category;
+            }
+        }
+        $this->touch();
+    }
+
+    public function incrementViews(): void
+    {
+        $this->numberOfViews++;
+        if (($id = $this->getId()) !== null) {
+            $this->recordThat(new ArticleViewed($id));
+        }
+    }
+
+    public function markAsTop(): void
+    {
+        if ($this->isTop) {
+            return;
+        }
+        $this->isTop = true;
+        $this->touch();
+        if (($id = $this->getId()) !== null) {
+            $this->recordThat(new ArticleMarkedAsTop($id));
+        }
+    }
+
+    public function unmarkAsTop(): void
+    {
+        if (!$this->isTop) {
+            return;
+        }
+        $this->isTop = false;
+        $this->touch();
+        if (($id = $this->getId()) !== null) {
+            $this->recordThat(new ArticleUnmarkedFromTop($id));
+        }
+    }
+
+    public function softDelete(): void
+    {
+        if ($this->deletedAt !== null) {
+            return;
+        }
+        $this->deletedAt = new DateTime();
+        $this->touch();
+    }
+
+    public function addComment(CommentAuthor $author, CommentContent $content): Comment
+    {
+        $comment = Comment::post($this, $author, $content);
+        $this->comments[] = $comment;
+
+        return $comment;
+    }
+
+    public function removeComment(CommentID $commentID): void
+    {
+        foreach ($this->comments as $comment) {
+            if (($id = $comment->getId()) !== null && $id->equals($commentID)) {
+                $this->comments->removeElement($comment);
+                return;
+            }
+        }
     }
 
     public function getId(): ?ArticleID
@@ -67,43 +208,19 @@ class Article
         return $this->id ? new ArticleID($this->id) : null;
     }
 
-    public function setId(?int $id): self
+    public function getTitle(): ArticleTitle
     {
-        $this->id = $id;
-        return $this;
+        return new ArticleTitle($this->title);
     }
 
-    public function getTitle(): string
+    public function getShortDescription(): ShortDescription
     {
-        return $this->title;
+        return new ShortDescription($this->shortDescription);
     }
 
-    public function setTitle(string $title): self
+    public function getContent(): ArticleContent
     {
-        $this->title = $title;
-        return $this;
-    }
-
-    public function getShortDescription(): string
-    {
-        return $this->shortDescription;
-    }
-
-    public function setShortDescription(string $shortDescription): self
-    {
-        $this->shortDescription = $shortDescription;
-        return $this;
-    }
-
-    public function getContent(): string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-        return $this;
+        return new ArticleContent($this->content);
     }
 
     public function getImage(): ?Image
@@ -111,102 +228,30 @@ class Article
         return $this->image;
     }
 
-    public function setImage(?Image $image): self
-    {
-        $this->image = $image;
-        return $this;
-    }
-
     public function getNumberOfViews(): int
     {
         return $this->numberOfViews;
     }
 
-    public function setNumberOfViews(int $numberOfViews): self
-    {
-        $this->numberOfViews = $numberOfViews;
-        return $this;
-    }
-
-    public function getIsTop(): bool
+    public function isTop(): bool
     {
         return $this->isTop;
     }
 
-    public function setIsTop(bool $isTop): self
-    {
-        $this->isTop = $isTop;
-        return $this;
-    }
-
     /**
-     * @return Collection|Category[]
+     * @return Collection<int, Category>
      */
-    public function getCategories(): Collection | array
+    public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    public function addCategory(Category $category): self
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories[] = $category;
-        }
-        return $this;
-    }
-
-
     /**
-     * @param Collection|Category[] $categories
-     * @return $this
+     * @return Collection<int, Comment>
      */
-    public function setCategories(array $categories): self
-    {
-        $this->clearCategories();
-        foreach ($categories as $category) {
-            $this->addCategory($category);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Category $category): self
-    {
-        $this->categories->removeElement($category);
-        return $this;
-    }
-
-    public function clearCategories(): self
-    {
-        $this->categories->clear();
-
-        return $this;
-    }
-
     public function getComments(): Collection
     {
         return $this->comments;
-    }
-
-    public function addComment(Comment $comment): self
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setArticle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): self
-    {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getArticle() === $this) {
-                $comment->setArticle();
-            }
-        }
-
-        return $this;
     }
 
     public function getCreatedAt(): DateTimeInterface
@@ -214,21 +259,9 @@ class Article
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
     public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
     }
 
     public function getDeletedAt(): ?DateTimeInterface
@@ -236,9 +269,24 @@ class Article
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?DateTimeInterface $deletedAt): self
+    private function touch(): void
     {
-        $this->deletedAt = $deletedAt;
-        return $this;
+        $this->updatedAt = new DateTime();
+    }
+
+    #[ORM\PostPersist]
+    public function onPersisted(): void
+    {
+        if ($this->id === null) {
+            return;
+        }
+        $categoryIDs = [];
+        foreach ($this->categories as $category) {
+            $categoryID = $category->getId();
+            if ($categoryID !== null) {
+                $categoryIDs[] = $categoryID;
+            }
+        }
+        $this->recordThat(new ArticleCreated($this->getId(), $categoryIDs));
     }
 }

@@ -2,14 +2,23 @@
 
 namespace App\News\Domain\Entity;
 
+use App\News\Domain\Event\CommentPosted;
+use App\News\Domain\Event\RecordsDomainEvents;
+use App\News\Domain\Event\RecordsDomainEventsTrait;
+use App\News\Domain\ValueObject\CommentAuthor;
+use App\News\Domain\ValueObject\CommentContent;
 use App\News\Domain\ValueObject\CommentID;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'comment')]
-class Comment
+#[ORM\HasLifecycleCallbacks]
+class Comment implements RecordsDomainEvents
 {
+    use RecordsDomainEventsTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
@@ -34,70 +43,56 @@ class Comment
     #[ORM\JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     private Article $article;
 
+    private function __construct()
+    {
+    }
+
+    /**
+     * @internal Only meant to be called from {@see Article::addComment()}.
+     * Comment is a child entity of the Article aggregate; do not instantiate it from the outside.
+     */
+    public static function post(Article $article, CommentAuthor $author, CommentContent $content): self
+    {
+        $now = new DateTime();
+
+        $comment = new self();
+        $comment->article = $article;
+        $comment->author = $author->value;
+        $comment->content = $content->value;
+        $comment->createdAt = $now;
+        $comment->updatedAt = $now;
+
+        return $comment;
+    }
+
+    public function edit(CommentContent $content): void
+    {
+        $this->content = $content->value;
+        $this->touch();
+    }
+
+    public function softDelete(): void
+    {
+        if ($this->deletedAt !== null) {
+            return;
+        }
+        $this->deletedAt = new DateTime();
+        $this->touch();
+    }
+
     public function getId(): ?CommentID
     {
         return $this->id ? new CommentID($this->id) : null;
     }
 
-    public function setId(?int $id): self
+    public function getAuthor(): CommentAuthor
     {
-        $this->id = $id;
-        return $this;
+        return new CommentAuthor($this->author);
     }
 
-    public function getAuthor(): string
+    public function getContent(): CommentContent
     {
-        return $this->author;
-    }
-
-    public function setAuthor(string $author): self
-    {
-        $this->author = $author;
-        return $this;
-    }
-
-    public function getContent(): string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-        return $this;
-    }
-
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    public function getDeletedAt(): ?DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-        return $this;
+        return new CommentContent($this->content);
     }
 
     public function getArticle(): Article
@@ -105,9 +100,34 @@ class Comment
         return $this->article;
     }
 
-    public function setArticle(Article $article = null): self
+    public function getCreatedAt(): DateTimeInterface
     {
-        $this->article = $article;
-        return $this;
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    private function touch(): void
+    {
+        $this->updatedAt = new DateTime();
+    }
+
+    #[ORM\PostPersist]
+    public function onPersisted(): void
+    {
+        $commentID = $this->getId();
+        $articleID = $this->article->getId();
+        if ($commentID === null || $articleID === null) {
+            return;
+        }
+        $this->recordThat(new CommentPosted($commentID, $articleID));
     }
 }

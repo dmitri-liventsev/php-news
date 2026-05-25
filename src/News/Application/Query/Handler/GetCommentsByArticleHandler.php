@@ -2,26 +2,17 @@
 
 namespace App\News\Application\Query\Handler;
 
+use App\News\Application\Query\Finder\CommentFinderInterface;
 use App\News\Application\Query\GetCommentsByArticleQuery;
-use App\News\Application\Query\Handler\DTO\CommentDTO;
-use App\News\Domain\Entity\Comment;
-use App\News\Domain\Repository\CommentRepositoryInterface;
 
 class GetCommentsByArticleHandler
 {
-    private CommentRepositoryInterface $commentRepository;
-
-    public function __construct(CommentRepositoryInterface $commentRepository)
+    public function __construct(private readonly CommentFinderInterface $commentFinder)
     {
-        $this->commentRepository = $commentRepository;
     }
 
     public function __invoke(GetCommentsByArticleQuery $query): array
     {
-        $comments = $this->commentRepository->findByArticle($query->articleID);
-
-        return array_map(function (Comment $comment) {
-            return new CommentDTO($comment);
-        }, $comments);
+        return $this->commentFinder->findByArticle($query->articleID);
     }
 }

@@ -3,39 +3,32 @@
 namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\CreateCommentCommand;
-use App\News\Domain\Entity\Comment;
+use App\News\Domain\Exception\ArticleNotFoundException;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
-use App\News\Domain\Repository\CommentRepositoryInterface;
+use App\News\Domain\ValueObject\CommentAuthor;
+use App\News\Domain\ValueObject\CommentContent;
 use App\News\Domain\ValueObject\CommentID;
-use DateTime;
 
 class CreateCommentHandler
 {
-    private CommentRepositoryInterface $commentRepository;
-    private ArticleRepositoryInterface $articleRepository;
-
-    public function __construct(CommentRepositoryInterface $commentRepository, ArticleRepositoryInterface $articleRepository)
+    public function __construct(private readonly ArticleRepositoryInterface $articleRepository)
     {
-        $this->commentRepository = $commentRepository;
-        $this->articleRepository = $articleRepository;
     }
 
     public function __invoke(CreateCommentCommand $command): CommentID
     {
-        $comment = $this->buildComment($command);
-        return $this->commentRepository->save($comment);
-    }
-
-    private function buildComment(CreateCommentCommand $command): Comment
-    {
         $article = $this->articleRepository->findById($command->articleID);
-        $comment = new Comment();
-        $comment->setAuthor($command->author)
-            ->setContent($command->content)
-            ->setArticle($article)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime());
+        if (!$article) {
+            throw ArticleNotFoundException::byId($command->articleID);
+        }
 
-        return $comment;
+        $comment = $article->addComment(
+            new CommentAuthor($command->author),
+            new CommentContent($command->content),
+        );
+
+        $this->articleRepository->save($article);
+
+        return $comment->getId();
     }
 }

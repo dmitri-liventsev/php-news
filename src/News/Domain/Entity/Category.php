@@ -3,6 +3,8 @@
 namespace App\News\Domain\Entity;
 
 use App\News\Domain\ValueObject\CategoryID;
+use App\News\Domain\ValueObject\CategoryTitle;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,9 +22,6 @@ class Category
     #[ORM\Column(type: 'string', length: 255)]
     private string $title;
 
-    /**
-     * @var Collection|Article[]
-     */
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories')]
     private Collection $articles;
 
@@ -35,9 +34,36 @@ class Category
     #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $deletedAt = null;
 
-    public function __construct()
+    private function __construct()
     {
         $this->articles = new ArrayCollection();
+    }
+
+    public static function create(CategoryTitle $title): self
+    {
+        $now = new DateTime();
+
+        $category = new self();
+        $category->title = $title->value;
+        $category->createdAt = $now;
+        $category->updatedAt = $now;
+
+        return $category;
+    }
+
+    public function rename(CategoryTitle $title): void
+    {
+        $this->title = $title->value;
+        $this->touch();
+    }
+
+    public function softDelete(): void
+    {
+        if ($this->deletedAt !== null) {
+            return;
+        }
+        $this->deletedAt = new DateTime();
+        $this->touch();
     }
 
     public function getId(): ?CategoryID
@@ -45,21 +71,17 @@ class Category
         return $this->id ? new CategoryID($this->id) : null;
     }
 
-    public function setId(?int $id): self
+    public function getTitle(): CategoryTitle
     {
-        $this->id = $id;
-        return $this;
+        return new CategoryTitle($this->title);
     }
 
-    public function getTitle(): string
+    /**
+     * @return Collection<int, Article>
+     */
+    public function getArticles(): Collection
     {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-        return $this;
+        return $this->articles;
     }
 
     public function getCreatedAt(): DateTimeInterface
@@ -67,21 +89,9 @@ class Category
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
     public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
     }
 
     public function getDeletedAt(): ?DateTimeInterface
@@ -89,31 +99,8 @@ class Category
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?DateTimeInterface $deletedAt): self
+    private function touch(): void
     {
-        $this->deletedAt = $deletedAt;
-        return $this;
-    }
-
-    /**
-     * @return Collection|Article[]
-     */
-    public function getArticles(): Collection | array
-    {
-        return $this->articles;
-    }
-
-    public function addArticle(Article $article): self
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles[] = $article;
-        }
-        return $this;
-    }
-
-    public function removeArticle(Article $article): self
-    {
-        $this->articles->removeElement($article);
-        return $this;
+        $this->updatedAt = new DateTime();
     }
 }

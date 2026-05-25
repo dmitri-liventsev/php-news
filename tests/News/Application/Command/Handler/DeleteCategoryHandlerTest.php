@@ -51,7 +51,7 @@ class DeleteCategoryHandlerTest extends KernelTestCase
         $finalCategoryCount = $this->getCategoryCount();
         $finalArticleCount = $this->getArticleCount();
 
-        $article = $this->articleRepository->find($article->getId()->getValue());
+        $article = $this->articleRepository->find($article->getId()->value);
 
         $this->assertNotNull($article, 'Article should not be deleted.');
         $this->assertSame($initialCategoryCount, $finalCategoryCount, 'Category was not deleted correctly.');

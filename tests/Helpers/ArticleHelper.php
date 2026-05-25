@@ -4,20 +4,27 @@ namespace App\Tests\Helpers;
 
 use App\News\Domain\Entity\Article;
 use App\News\Domain\Entity\Category;
+use App\News\Domain\ValueObject\ArticleContent;
+use App\News\Domain\ValueObject\ArticleTitle;
+use App\News\Domain\ValueObject\ShortDescription;
+use DateTimeInterface;
+use ReflectionProperty;
 
 class ArticleHelper
 {
-    public static function buildArticle(Category$category): Article
+    public static function buildArticle(Category $category, ?DateTimeInterface $createdAt = null): Article
     {
-        $article = new Article();
-        $article->setTitle('title')
-            ->setIsTop(false)
-            ->addCategory($category)
-            ->setShortDescription("short description")
-            ->setContent("content")
-            ->setNumberOfViews(0)
-            ->setUpdatedAt(new \DateTime())
-            ->setCreatedAt(new \DateTime('now'));
+        $article = Article::create(
+            new ArticleTitle('title'),
+            new ShortDescription('short description'),
+            new ArticleContent('content'),
+            null,
+            [$category],
+        );
+
+        if ($createdAt !== null) {
+            (new ReflectionProperty(Article::class, 'createdAt'))->setValue($article, $createdAt);
+        }
 
         return $article;
     }

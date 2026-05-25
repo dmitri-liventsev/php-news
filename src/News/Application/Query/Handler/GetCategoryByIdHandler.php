@@ -2,26 +2,22 @@
 
 namespace App\News\Application\Query\Handler;
 
+use App\News\Application\Query\Finder\CategoryFinderInterface;
 use App\News\Application\Query\GetCategoryByIdQuery;
-use App\News\Domain\Entity\Category;
-use App\News\Domain\Repository\CategoryRepositoryInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\News\Application\Query\Handler\DTO\CategoryPreviewDTO;
+use App\News\Domain\Exception\CategoryNotFoundException;
 
 class GetCategoryByIdHandler
 {
-    private CategoryRepositoryInterface $categoryRepository;
-
-    public function __construct(CategoryRepositoryInterface $categoryRepository)
+    public function __construct(private readonly CategoryFinderInterface $categoryFinder)
     {
-        $this->categoryRepository = $categoryRepository;
     }
 
-    public function __invoke(GetCategoryByIdQuery $query): Category
+    public function __invoke(GetCategoryByIdQuery $query): CategoryPreviewDTO
     {
-        $category = $this->categoryRepository->find($query->categoryID);
-
-        if (!$category) {
-            throw new NotFoundHttpException('Category not found');
+        $category = $this->categoryFinder->findOneById($query->categoryID);
+        if ($category === null) {
+            throw CategoryNotFoundException::byId($query->categoryID);
         }
 
         return $category;

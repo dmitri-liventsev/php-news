@@ -14,7 +14,7 @@ class CategoryIdNormalizer implements NormalizerInterface
             throw new InvalidArgumentException('Object must be an instance of Doctrine\Common\Collections\Collection.');
         }
 
-        return array_map(fn($category) => $category->getId()->getValue(), $object->toArray());
+        return array_map(fn($category) => $category->getId()->value, $object->toArray());
     }
 
     public function supportsNormalization($data, $format = null, array $context = []): bool

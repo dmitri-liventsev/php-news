@@ -2,78 +2,33 @@
 
 namespace App\News\Infrastructure\Util\Request;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints\Collection;
 
 abstract class BaseRequest
 {
-    public function __construct(protected ValidatorInterface $validator)
+    /**
+     * @return array<string, array<int, \Symfony\Component\Validator\Constraint>>
+     */
+    abstract public function getRules(): array;
+
+    /**
+     * Hook for populating properties from the incoming HTTP request.
+     * The default implementation maps the JSON body onto class properties by name;
+     * subclasses override it for multipart uploads or other custom payloads.
+     */
+    public function fillFromRequest(Request $http): void
     {
-        $this->populate();
-
-        if ($this->autoValidateRequest()) {
-            $this->validate();
-        }
-    }
-
-    protected abstract function getRules(): array;
-
-    public function validate(): void
-    {
-        $validator = Validation::createValidator();
-        $rules = $this->getRules();
-        $data = [];
-        foreach ($rules as $field => $rule) {
-            $data[$field] = $this->$field;
-        }
-
-        $collectionConstraint = new Collection($rules);
-        $errors = $validator->validate($data, $collectionConstraint);
-
-        $messages = ['message' => 'validation_failed', 'errors' => []];
-
-        foreach ($errors as $message) {
-            $messages['errors'][] = [
-                'property' => $message->getPropertyPath(),
-                'value' => $message->getInvalidValue(),
-                'message' => $message->getMessage(),
-            ];
-        }
-
-        if (count($messages['errors']) > 0) {
-            $messages['ok'] = false;
-            $response = new JsonResponse($messages, 400);
-            $response->send();
-
-            exit;
-        }
-    }
-
-    public function getRequest(): Request
-    {
-        return Request::createFromGlobals();
-    }
-
-    protected function populate(): void
-    {
-        $request = $this->getRequest();
-
         try {
-            foreach ($request->toArray() as $property => $value) {
-                if (property_exists($this, $property)) {
-                    $this->{$property} = $value;
-                }
-            }
-        } catch (\Exception $e) {
-            return;
+            $data = $http->getContent() !== '' ? $http->toArray() : [];
+        } catch (\JsonException) {
+            $data = [];
         }
-    }
 
-    protected function autoValidateRequest(): bool
-    {
-        return true;
+        foreach ($data as $property => $value) {
+            if (property_exists($this, $property)) {
+                (new ReflectionProperty($this, $property))->setValue($this, $value);
+            }
+        }
     }
 }

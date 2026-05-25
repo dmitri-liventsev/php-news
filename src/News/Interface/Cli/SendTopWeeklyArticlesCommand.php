@@ -3,8 +3,8 @@
 namespace App\News\Interface\Cli;
 
 use App\News\Application\Query\GetWeeklyTopArticlesQuery;
+use App\News\Application\Query\Handler\DTO\ArticleDTO;
 use App\News\Application\Query\Handler\GetWeeklyTopArticlesHandler;
-use App\News\Domain\Entity\Article;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -62,8 +62,7 @@ class SendTopWeeklyArticlesCommand extends Command
     }
 
     /**
-     * @param Article[] $articles
-     * @return string
+     * @param ArticleDTO[] $articles
      */
     private function generateEmailContent(array $articles): string
     {
@@ -71,8 +70,8 @@ class SendTopWeeklyArticlesCommand extends Command
         foreach ($articles as $article) {
             $content .= sprintf(
                 '<h2>%s</h2><p>%s</p><p></p>',
-                $article->getTitle(),
-                $article->getShortDescription()
+                $article->title,
+                $article->shortDescription,
             );
         }
 

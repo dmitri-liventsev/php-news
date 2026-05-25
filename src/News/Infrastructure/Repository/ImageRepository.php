@@ -23,15 +23,14 @@ class ImageRepository extends ServiceEntityRepository implements ImageRepository
         return $image->getId();
     }
 
-    public function findById(int $id): ?Image
+    public function findById(ImageID $imageID): ?Image
     {
-        return $this->find($id);
+        return $this->find($imageID->value);
     }
 
     public function deleteById(ImageID $imageID): void
     {
-
-        $image = $this->find($imageID->getValue());
+        $image = $this->find($imageID->value);
 
         if (!$image) {
             return;

@@ -2,7 +2,6 @@
 
 namespace App\News\Interface\Http\Client\Controller;
 
-use App\News\Application\Command\CreateCommentCommand;
 use App\News\Application\Query\GetCommentsByArticleQuery;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Interface\Http\Client\Controller\Request\CreateCommentRequest;
@@ -33,10 +32,8 @@ class CommentController extends AbstractController
 
     public function postComment(int $article_id, CreateCommentRequest $request): JsonResponse
     {
-        $commentID = $this->handle(
-            CreateCommentCommand::fromRequest($article_id, $request)
-        );
+        $commentID = $this->handle($request->toCommand($article_id));
 
-        return new JsonResponse(['status' => 'Comment added successfully', 'ok' => true, 'id' => $commentID->getValue()], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Comment added successfully', 'ok' => true, 'id' => $commentID->value], Response::HTTP_CREATED);
     }
 }

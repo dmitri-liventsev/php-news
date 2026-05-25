@@ -1,7 +1,10 @@
 <?php
+
 namespace App\News\Domain\Entity;
 
+use App\News\Domain\ValueObject\ImageFileName;
 use App\News\Domain\ValueObject\ImageID;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,26 +29,39 @@ class Image
     #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $deletedAt = null;
 
+    private function __construct()
+    {
+    }
+
+    public static function create(ImageFileName $fileName): self
+    {
+        $now = new DateTime();
+
+        $image = new self();
+        $image->fileName = $fileName->value;
+        $image->createdAt = $now;
+        $image->updatedAt = $now;
+
+        return $image;
+    }
+
+    public function softDelete(): void
+    {
+        if ($this->deletedAt !== null) {
+            return;
+        }
+        $this->deletedAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
     public function getId(): ?ImageID
     {
         return $this->id ? new ImageID($this->id) : null;
     }
 
-    public function setId(?int $id): self
+    public function getFileName(): ImageFileName
     {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    public function setFileName(string $fileName): self
-    {
-        $this->fileName = $fileName;
-        return $this;
+        return new ImageFileName($this->fileName);
     }
 
     public function getCreatedAt(): DateTimeInterface
@@ -53,31 +69,13 @@ class Image
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
     public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
     public function getDeletedAt(): ?DateTimeInterface
     {
         return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-        return $this;
     }
 }

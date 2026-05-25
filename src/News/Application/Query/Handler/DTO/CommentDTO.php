@@ -11,8 +11,8 @@ class CommentDTO
     public string $content;
 
     public function __construct(Comment $comment = null) {
-        $this->id = $comment?->getId()->getValue();
-        $this->author = $comment?->getAuthor();
-        $this->content = $comment?->getContent();
+        $this->id = $comment?->getId()->value;
+        $this->author = $comment?->getAuthor()->value;
+        $this->content = $comment?->getContent()->value;
     }
 }

@@ -6,7 +6,7 @@ use App\News\Application\Command\CreateCategoryCommand;
 use App\News\Domain\Entity\Category;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\ValueObject\CategoryID;
-use DateTime;
+use App\News\Domain\ValueObject\CategoryTitle;
 
 class CreateCategoryHandler
 {
@@ -23,12 +23,8 @@ class CreateCategoryHandler
         return $this->categoryRepository->save($category);
     }
 
-    private function buildCategory(CreateCategoryCommand $command): Category {
-        $category = new Category();
-        $category->setTitle($command->title)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime());
-
-        return $category;
+    private function buildCategory(CreateCategoryCommand $command): Category
+    {
+        return Category::create(new CategoryTitle($command->title));
     }
 }

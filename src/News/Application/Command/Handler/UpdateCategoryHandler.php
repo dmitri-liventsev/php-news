@@ -3,27 +3,24 @@
 namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\UpdateCategoryCommand;
+use App\News\Domain\Exception\CategoryNotFoundException;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
-use DateTime;
+use App\News\Domain\ValueObject\CategoryTitle;
 
 class UpdateCategoryHandler
 {
-    private CategoryRepositoryInterface $categoryRepository;
-
-    public function __construct(CategoryRepositoryInterface $categoryRepository)
+    public function __construct(private readonly CategoryRepositoryInterface $categoryRepository)
     {
-        $this->categoryRepository = $categoryRepository;
     }
 
     public function __invoke(UpdateCategoryCommand $command): void
     {
-        $category = $this->categoryRepository->find($command->categoryID->getValue());
+        $category = $this->categoryRepository->findById($command->categoryID);
         if (!$category) {
-            throw new \Exception('Category not found');
+            throw CategoryNotFoundException::byId($command->categoryID);
         }
 
-        $category->setTitle($command->title);
-        $category->setUpdatedAt(new DateTime());
+        $category->rename(new CategoryTitle($command->title));
 
         $this->categoryRepository->save($category);
     }

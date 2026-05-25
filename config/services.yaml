@@ -75,6 +75,15 @@ services:
     App\News\Domain\Repository\ImageRepositoryInterface:
         alias: App\News\Infrastructure\Repository\ImageRepository
 
+    App\News\Application\Query\Finder\ArticleFinderInterface:
+        alias: App\News\Infrastructure\Query\ArticleFinder
+
+    App\News\Application\Query\Finder\CategoryFinderInterface:
+        alias: App\News\Infrastructure\Query\CategoryFinder
+
+    App\News\Application\Query\Finder\CommentFinderInterface:
+        alias: App\News\Infrastructure\Query\CommentFinder
+
     App\News\Interface\Cli\SendTopWeeklyArticlesCommand:
         arguments:
             $recipientEmail: '%env(RECIPIENT_EMAIL)%'
@@ -83,3 +92,7 @@ services:
 
     App\News\Infrastructure\Serializer\CategoryIdNormalizer:
         tags: [ 'serializer.normalizer' ]
+
+    App\News\Infrastructure\Util\Request\BaseRequestValueResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 200 }

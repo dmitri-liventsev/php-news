@@ -4,53 +4,26 @@ namespace App\News\Domain\ValueObject;
 
 use InvalidArgumentException;
 
-class CategoryID
+final readonly class CategoryID
 {
-    private int $id;
+    public int $value;
 
-    /**
-     * CategoryID constructor.
-     *
-     * @param int $id
-     * @throws InvalidArgumentException if the provided id is not a positive integer
-     */
-    public function __construct(int $id)
+    public function __construct(int $value)
     {
-        if ($id <= 0) {
+        if ($value <= 0) {
             throw new InvalidArgumentException('Category ID must be a positive integer.');
         }
 
-        $this->id = $id;
+        $this->value = $value;
     }
 
-    /**
-     * Get the category ID.
-     *
-     * @return int
-     */
-    public function getValue(): int
+    public function equals(self $other): bool
     {
-        return $this->id;
+        return $this->value === $other->value;
     }
 
-    /**
-     * Check if the given category ID is equal to the current one.
-     *
-     * @param CategoryID $other
-     * @return bool
-     */
-    public function equals(CategoryID $other): bool
-    {
-        return $this->id === $other->getValue();
-    }
-
-    /**
-     * Convert the CategoryID to a string representation.
-     *
-     * @return string
-     */
     public function __toString(): string
     {
-        return (string) $this->id;
+        return (string) $this->value;
     }
 }

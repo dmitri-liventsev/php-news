@@ -2,10 +2,7 @@
 
 namespace App\News\Interface\Http\Admin\Controller;
 
-use App\News\Application\Command\CreateArticleCommand;
-use App\News\Application\Command\CreateImageCommand;
 use App\News\Application\Command\DeleteArticleCommand;
-use App\News\Application\Command\UpdateArticleCommand;
 use App\News\Application\Query\GetArticleByIdQuery;
 use App\News\Application\Query\GetArticlesQuery;
 use App\News\Domain\Entity\Image;
@@ -56,17 +53,14 @@ class AdminArticleController extends AbstractController
 
     public function createArticle(CreateArticleRequest $request): JsonResponse
     {
-        $articleID = $this->handle(
-            CreateArticleCommand::fromRequest($request)
-        );
+        $articleID = $this->handle($request->toCommand());
 
-        return new JsonResponse(['status' => 'Article created', 'article_id' => $articleID->getValue()], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Article created', 'article_id' => $articleID->value], Response::HTTP_CREATED);
     }
 
     public function updateArticle(int $article_id, UpdateArticleRequest $request): JsonResponse
     {
-        $command = UpdateArticleCommand::fromRequest($article_id, $request);
-        $this->handle($command);
+        $this->handle($request->toCommand($article_id));
 
         return new JsonResponse(['status' => 'Article updated']);
     }
@@ -82,10 +76,8 @@ class AdminArticleController extends AbstractController
     public function uploadImage(CreateImageRequest $request): JsonResponse
     {
         /** @var Image $image */
-        $image = $this->handle(CreateImageCommand::fromRequest(
-            $request)
-        );
+        $image = $this->handle($request->toCommand());
 
-        return new JsonResponse(['id' => $image->getId()->getValue(), 'file_name' => $image->getFileName()], Response::HTTP_OK);
+        return new JsonResponse(['id' => $image->getId()->value, 'file_name' => $image->getFileName()->value], Response::HTTP_OK);
     }
 }

@@ -4,72 +4,54 @@ namespace App\News\Application\Command\Handler;
 
 use App\News\Application\Command\UpdateArticleCommand;
 use App\News\Domain\Entity\Article;
+use App\News\Domain\Exception\ArticleNotFoundException;
+use App\News\Domain\Exception\ImageNotFoundException;
 use App\News\Domain\Repository\ArticleRepositoryInterface;
 use App\News\Domain\Repository\CategoryRepositoryInterface;
 use App\News\Domain\Repository\ImageRepositoryInterface;
-use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
-use PharIo\Version\Exception;
+use App\News\Domain\ValueObject\ArticleContent;
+use App\News\Domain\ValueObject\ArticleTitle;
+use App\News\Domain\ValueObject\ImageID;
+use App\News\Domain\ValueObject\ShortDescription;
 
 class UpdateArticleHandler
 {
-    private ArticleRepositoryInterface $articleRepository;
-
-    private CategoryRepositoryInterface $categoryRepository;
-
-    private ImageRepositoryInterface $imageRepository;
-
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        ArticleRepositoryInterface $articleRepository,
-        CategoryRepositoryInterface $categoryRepository,
-        ImageRepositoryInterface $imageRepository,
-        EntityManagerInterface  $entityManager
+        private readonly ArticleRepositoryInterface  $articleRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository,
+        private readonly ImageRepositoryInterface    $imageRepository,
     ) {
-        $this->articleRepository = $articleRepository;
-        $this->categoryRepository = $categoryRepository;
-        $this->imageRepository = $imageRepository;
-        $this->entityManager = $entityManager;
     }
 
     public function __invoke(UpdateArticleCommand $command): void
     {
-        /** @var Article $article */
-        $article = $this->articleRepository->find($command->articleID->getValue());
+        $article = $this->articleRepository->findById($command->articleID);
         if (!$article) {
-            throw new \Exception('Article not found');
+            throw ArticleNotFoundException::byId($command->articleID);
         }
-        $article = $this->updateArticle($article, $command);
 
-        $this->entityManager->beginTransaction();
-        try {
-            $this->articleRepository->save($article);
-            $this->entityManager->commit();
-        } catch (Exception $e) {
-            $this->entityManager->rollback();
-            throw $e;
-        }
+        $this->applyChanges($article, $command);
+        $this->articleRepository->save($article);
     }
 
-    private function updateArticle(Article $article, UpdateArticleCommand $command): Article
+    private function applyChanges(Article $article, UpdateArticleCommand $command): void
     {
-        $article->setTitle($command->title);
-        $article->setShortDescription($command->shortDescription);
-        $article->setContent($command->content);
-        if ($command->imageID !== null) {
-            $image = $this->imageRepository->find($command->imageID);
-            if (!$image) {
-                throw new \Exception('Image not found');
-            }
-            $article->setImage($image);
-        } else {
-            $article->setImage(null);
-        }
-        $categories = $this->categoryRepository->findByIds($command->categories);
-        $article->setCategories($categories);
-        $article->setUpdatedAt(new DateTime());
+        $article->rename(new ArticleTitle($command->title));
+        $article->changeShortDescription(new ShortDescription($command->shortDescription));
+        $article->rewriteContent(new ArticleContent($command->content));
 
-        return $article;
+        if ($command->imageID !== null) {
+            $imageID = new ImageID($command->imageID);
+            $image = $this->imageRepository->findById($imageID);
+            if (!$image) {
+                throw ImageNotFoundException::byId($imageID);
+            }
+            $article->changeImage($image);
+        } else {
+            $article->changeImage(null);
+        }
+
+        $categories = $this->categoryRepository->findByIds($command->categories);
+        $article->assignToCategories(...$categories);
     }
 }

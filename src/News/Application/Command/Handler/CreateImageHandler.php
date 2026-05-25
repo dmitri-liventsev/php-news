@@ -5,7 +5,7 @@ namespace App\News\Application\Command\Handler;
 use App\News\Application\Command\CreateImageCommand;
 use App\News\Domain\Entity\Image;
 use App\News\Domain\Repository\ImageRepositoryInterface;
-use DateTime;
+use App\News\Domain\ValueObject\ImageFileName;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CreateImageHandler
@@ -36,10 +36,7 @@ class CreateImageHandler
 
         $command->file->move($this->imagesDirectory, $newFilename);
 
-        $image = new Image();
-        $image->setFilename($newFilename)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime());
+        $image = Image::create(new ImageFileName($newFilename));
 
         $this->imageRepository->save($image);
 

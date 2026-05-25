@@ -9,7 +9,7 @@ interface ImageRepositoryInterface
 {
     public function save(Image $image): ImageID;
 
-    public function findById(int $id): ?Image;
+    public function findById(ImageID $imageID): ?Image;
 
     public function deleteById(ImageID $imageID): void;
 }

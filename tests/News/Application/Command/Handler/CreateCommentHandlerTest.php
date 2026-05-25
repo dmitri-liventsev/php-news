@@ -32,7 +32,7 @@ class CreateCommentHandlerTest extends KernelTestCase
         $this->commentRepository = self::getContainer()->get(CommentRepositoryInterface::class);
         $this->categoryRepository = self::getContainer()->get(CategoryRepositoryInterface::class);
         $this->entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $this->handler = new CreateCommentHandler($this->commentRepository, $this->articleRepository);
+        $this->handler = new CreateCommentHandler($this->articleRepository);
     }
 
     public function testCreateComment(): void
@@ -52,11 +52,11 @@ class CreateCommentHandlerTest extends KernelTestCase
         $commentID = ($this->handler)($command);
         $this->entityManager->clear();
 
-        $savedComment = $this->commentRepository->find($commentID->getValue());
+        $savedComment = $this->commentRepository->findById($commentID);
 
         $this->assertNotNull($savedComment, 'Comment was not saved.');
-        $this->assertSame('Test Author', $savedComment->getAuthor());
-        $this->assertSame('This is a test comment.', $savedComment->getContent());
-        $this->assertSame($article->getId()->getValue(), $savedComment->getArticle()->getId()->getValue());
+        $this->assertSame('Test Author', $savedComment->getAuthor()->value);
+        $this->assertSame('This is a test comment.', $savedComment->getContent()->value);
+        $this->assertSame($article->getId()->value, $savedComment->getArticle()->getId()->value);
     }
 }

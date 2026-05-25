@@ -5,7 +5,6 @@ namespace App\News\Domain\Repository;
 use App\News\Domain\Entity\Article;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\CategoryID;
-use DateTimeInterface;
 
 interface ArticleRepositoryInterface
 {
@@ -13,16 +12,15 @@ interface ArticleRepositoryInterface
 
     public function deleteById(ArticleID $articleID): void;
 
-    public function increaseNumberOfView(ArticleID $articleID): void;
+    public function findById(ArticleID $articleID): ?Article;
 
-    public function findByCategoryWithPagination(CategoryID $categoryID, int $limit, int$offset): array;
-    public function findWithPagination(int $limit, int$offset): array;
+    /**
+     * @return Article[] the latest N articles of the category sorted by createdAt DESC
+     */
+    public function findLatestByCategory(CategoryID $categoryID, int $limit): array;
 
-    public function resetTopArticlesByCategory(CategoryID $categoryID): void;
-
-    public function findTopArticlesByCategory(CategoryID $categoryID, int $limit): array;
-
-    public function findTopArticles(DateTimeInterface $from, int $limit): array;
-
-    public function findById(ArticleID $articleID);
+    /**
+     * @return Article[] articles of the category currently flagged isTop=true
+     */
+    public function findCurrentTopByCategory(CategoryID $categoryID): array;
 }

@@ -10,7 +10,7 @@ class CategoryPreviewDTO
     public string $title;
 
     public function __construct(Category $category = null) {
-        $this->id = $category?->getId()->getValue();
-        $this->title = $category?->getTitle();
+        $this->id = $category?->getId()->value;
+        $this->title = $category?->getTitle()->value;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\News\Interface\Http\Admin\Controller\Request;
 
+use App\News\Application\Command\CreateArticleCommand;
 use App\News\Infrastructure\Util\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -87,5 +88,16 @@ class CreateArticleRequest extends BaseRequest
     public function getCategories(): array
     {
         return $this->categories;
+    }
+
+    public function toCommand(): CreateArticleCommand
+    {
+        return new CreateArticleCommand(
+            $this->getTitle(),
+            $this->getShortDescription(),
+            $this->getContent(),
+            $this->getImageID(),
+            $this->getCategories(),
+        );
     }
 }

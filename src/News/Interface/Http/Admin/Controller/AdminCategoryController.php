@@ -2,9 +2,7 @@
 
 namespace App\News\Interface\Http\Admin\Controller;
 
-use App\News\Application\Command\CreateCategoryCommand;
 use App\News\Application\Command\DeleteCategoryCommand;
-use App\News\Application\Command\UpdateCategoryCommand;
 use App\News\Application\Query\GetCategoriesQuery;
 use App\News\Application\Query\GetCategoryByIdQuery;
 use App\News\Domain\ValueObject\CategoryID;
@@ -48,17 +46,14 @@ class AdminCategoryController extends AbstractController
 
     public function createCategory(CreateCategoryRequest $request): JsonResponse
     {
-        $categoryID = $this->handle(
-            CreateCategoryCommand::fromRequest($request)
-        );
+        $categoryID = $this->handle($request->toCommand());
 
         return new JsonResponse(['status' => 'Category created', 'category_id' => $categoryID], Response::HTTP_CREATED);
     }
 
     public function updateCategory(int $category_id, UpdateCategoryRequest $request): JsonResponse
     {
-        $command = UpdateCategoryCommand::fromRequest($category_id, $request);
-        $this->handle($command);
+        $this->handle($request->toCommand($category_id));
 
         return new JsonResponse(['status' => 'Category updated']);
     }

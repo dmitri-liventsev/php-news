@@ -52,7 +52,7 @@ class UpdateArticleHandlerTest extends KernelTestCase
         $this->categoryRepository->save($newCategory);
 
         $article = ArticleHelper::buildArticle($category);
-        $article->setImage($image);
+        $article->changeImage($image);
         $this->articleRepository->save($article);
 
         $this->assertNotNull($article->getImage());
@@ -74,10 +74,10 @@ class UpdateArticleHandlerTest extends KernelTestCase
         $updatedArticle = $this->articleRepository->findById($article->getId());
 
         $this->assertNull($updatedArticle->getImage(), 'Image was not removed from the article.');
-        $this->assertEquals('Updated Title', $updatedArticle->getTitle(), 'Title was not updated.');
-        $this->assertEquals('Updated Short Description', $updatedArticle->getShortDescription(), 'Short description was not updated.');
-        $this->assertEquals('Updated Content', $updatedArticle->getContent(), 'Content was not updated.');
+        $this->assertSame('Updated Title', $updatedArticle->getTitle()->value, 'Title was not updated.');
+        $this->assertSame('Updated Short Description', $updatedArticle->getShortDescription()->value, 'Short description was not updated.');
+        $this->assertSame('Updated Content', $updatedArticle->getContent()->value, 'Content was not updated.');
         $this->assertEquals(1, $updatedArticle->getCategories()->count(), 'Category not replaced');
-        $this->assertEquals($newCategory->getId()->getValue(), $updatedArticle->getCategories()->get(0)->getId()->getValue(), 'Category not replaced');
+        $this->assertEquals($newCategory->getId()->value, $updatedArticle->getCategories()->get(0)->getId()->value, 'Category not replaced');
     }
 }

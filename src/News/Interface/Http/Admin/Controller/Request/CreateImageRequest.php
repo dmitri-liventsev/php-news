@@ -2,14 +2,16 @@
 
 namespace App\News\Interface\Http\Admin\Controller\Request;
 
+use App\News\Application\Command\CreateImageCommand;
 use App\News\Infrastructure\Util\Request\BaseRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CreateImageRequest extends BaseRequest
 {
-    protected UploadedFile $file;
+    protected ?UploadedFile $file = null;
 
     public function getRules(): array
     {
@@ -25,13 +27,18 @@ class CreateImageRequest extends BaseRequest
         ];
     }
 
-    public function getFile() : UploadedFile
+    public function getFile(): UploadedFile
     {
         return $this->file;
     }
 
-    protected function populate() : void {
-        parent::populate();
-        $this->file = $this->getRequest()->files->get('image');
+    public function toCommand(): CreateImageCommand
+    {
+        return new CreateImageCommand($this->getFile());
+    }
+
+    public function fillFromRequest(Request $http): void
+    {
+        $this->file = $http->files->get('image');
     }
 }

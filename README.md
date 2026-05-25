@@ -77,4 +77,4 @@ For further assistance, please refer to the Symfony Documentation or contact the
 ## Contact
 For any questions or suggestions, feel free to send a letter to Santa Claus.
 
-Happy coding! 🚀
+Happy coding!  🚀

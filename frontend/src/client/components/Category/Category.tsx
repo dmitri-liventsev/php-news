@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import ArticlePreview from '../Article/ArticlePreview';
 import { useFetchArticlesByCategoryQuery } from '../../features/api/apiSlice';
 import Loading from '../Util/Loading';
+import Breadcrumbs from '../Util/Breadcrumbs';
 import { useTranslation } from 'react-i18next';
 
 const Category: React.FC = () => {
@@ -47,6 +48,9 @@ const Category: React.FC = () => {
 
     return (
         <div>
+            {data?.category.title && (
+                <Breadcrumbs items={[{ label: data.category.title }]} />
+            )}
             <Typography variant="h4" gutterBottom>{data?.category.title}</Typography>
             <InfiniteScroll
                 dataLength={articles.length}

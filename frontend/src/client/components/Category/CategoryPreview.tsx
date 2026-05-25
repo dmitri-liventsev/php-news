@@ -1,5 +1,6 @@
 import React from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, Box } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArticlePreview from '../Article/ArticlePreview';
 import { Category as CategoryType } from './index';
 import { Link } from 'react-router-dom';
@@ -15,9 +16,31 @@ const CategoryPreview: React.FC<Props> = ({ category }) => {
     return (
         <div>
             <Typography variant="h4" gutterBottom>
-                <Link to={`/category/${category.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Box
+                    component={Link}
+                    to={`/category/${category.id}`}
+                    sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        transition: 'color 0.15s ease',
+                        '& .chevron': {
+                            transition: 'transform 0.15s ease',
+                        },
+                        '&:hover': {
+                            textDecoration: 'underline',
+                            color: 'primary.dark',
+                            '& .chevron': {
+                                transform: 'translateX(3px)',
+                            },
+                        },
+                    }}
+                >
                     {category.title}
-                </Link>
+                    <ChevronRightIcon className="chevron" fontSize="inherit" />
+                </Box>
             </Typography>
             <Grid container spacing={2}>
                 {category.articles.slice(0, 3).map(article => (

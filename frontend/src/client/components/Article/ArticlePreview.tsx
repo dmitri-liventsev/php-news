@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Article } from './index';
 import { useTranslation } from 'react-i18next';
@@ -12,15 +12,22 @@ interface Props {
     direction?: 'row' | 'column';
 }
 
+const hoverSx = {
+    transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+    cursor: 'pointer',
+    '&:hover': {
+        transform: 'translateY(-3px)',
+        boxShadow: 6,
+    },
+};
+
 const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' }) => {
     const { t } = useTranslation();
 
-    const titleLink = (
-        <Link to={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography gutterBottom variant="h5" component="div">
-                {article.title}
-            </Typography>
-        </Link>
+    const title = (
+        <Typography gutterBottom variant="h5" component="div">
+            {article.title}
+        </Typography>
     );
 
     const shortDescription = (
@@ -30,37 +37,42 @@ const ArticlePreview: React.FC<Props> = ({ article, maxWidth, direction = 'row' 
     );
 
     const imageUrl = article.image && article.image.fileName != null ? `/images/articles/${article.image.fileName}` : PLACEHOLDER_IMAGE;
+    const href = `/article/${article.id}`;
 
-    return (
-        <>
-            {direction === 'row' ? (
-                <Card sx={{ display: 'flex', width: '100%', mb: 2 }}>
-                    <CardMedia
-                        component="img"
-                        sx={{ width: 150 }}
-                        image={imageUrl}
-                        alt={article.title}
-                    />
-                    <CardContent sx={{ flex: 1 }}>
-                        {titleLink}
-                        {shortDescription}
-                    </CardContent>
-                </Card>
-            ) : (
-                <Card sx={{ maxWidth, margin: 2 }}>
-                    <CardMedia
-                        component="img"
-                        height="140"
-                        image={imageUrl}
-                        alt={article.title}
-                    />
-                    <CardContent>
-                        {titleLink}
-                        {shortDescription}
-                    </CardContent>
-                </Card>
-            )}
-        </>
+    return direction === 'row' ? (
+        <Card sx={{ width: '100%', mb: 2, ...hoverSx }}>
+            <CardActionArea
+                component={Link}
+                to={href}
+                sx={{ display: 'flex', alignItems: 'stretch', justifyContent: 'flex-start' }}
+            >
+                <CardMedia
+                    component="img"
+                    sx={{ width: 150 }}
+                    image={imageUrl}
+                    alt={article.title}
+                />
+                <CardContent sx={{ flex: 1 }}>
+                    {title}
+                    {shortDescription}
+                </CardContent>
+            </CardActionArea>
+        </Card>
+    ) : (
+        <Card sx={{ maxWidth, margin: 2, ...hoverSx }}>
+            <CardActionArea component={Link} to={href}>
+                <CardMedia
+                    component="img"
+                    height="140"
+                    image={imageUrl}
+                    alt={article.title}
+                />
+                <CardContent>
+                    {title}
+                    {shortDescription}
+                </CardContent>
+            </CardActionArea>
+        </Card>
     );
 };
 

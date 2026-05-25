@@ -61,11 +61,11 @@ const ArticleRow: React.FC<Props> = ({ article }) => {
                 </Box>
             </Box>
             <Box>
-                <Link to={`/article/${article.id}`}>
+                <a href={`/article/${article.id}`} target="_blank" rel="noopener noreferrer">
                     <IconButton>
                         <VisibilityIcon />
                     </IconButton>
-                </Link>
+                </a>
 
                 <IconButton onClick={handleDelete} disabled={loading || isDeleting}>
                     <DeleteIcon />

@@ -4,6 +4,7 @@ import { Card, CardContent, Typography, CardMedia, Box } from '@mui/material';
 import ArticleComments from './ArticleComments';
 import { useFetchArticleQuery } from "../../features/api/apiSlice";
 import Loading from "../Util/Loading";
+import Breadcrumbs from "../Util/Breadcrumbs";
 import { useTranslation } from "react-i18next";
 
 const PLACEHOLDER_IMAGE = '/images/placeholder.png';
@@ -20,10 +21,20 @@ const Article: React.FC = () => {
         ? `/images/articles/${article.image.fileName}`
         : PLACEHOLDER_IMAGE;
 
+    const firstCategory = article?.categories?.[0];
+
     return (
         <div style={{ padding: '16px' }}>
             {article && (
                 <>
+                    <Breadcrumbs
+                        items={[
+                            ...(firstCategory
+                                ? [{ label: firstCategory.title, to: `/category/${firstCategory.id}` }]
+                                : []),
+                            { label: article.title },
+                        ]}
+                    />
                     <Card style={{ marginBottom: '16px' }}>
                         <CardContent>
                             {article.image && (

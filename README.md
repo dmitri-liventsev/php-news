@@ -19,62 +19,114 @@ This project was completed as part of a test assignment.
 
 - Docker
 - Docker Compose
-- PHP CLI
 
 ## Setup Instructions
 
 ### 1. Start Docker Compose
 
-Ensure Docker and Docker Compose are installed. Navigate to the project directory and start the Docker containers:
+From the project root:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
-This command will build and start the necessary Docker containers in detached mode.
 
-### 2. Generate Test Data
-   Once the containers are up and running, generate the test data using fixtures. Execute the following command:
-   
+This builds and starts the containers (`symfony_app`, `symfony_nginx`, `symfony_db`) in detached mode.
+
+> All `bin/console` / `bin/phpunit` commands below run inside the PHP container. Use either `docker compose exec app …` or `docker exec symfony_app …` — both work.
+
+### 2. Run Database Migrations
+
+Create the schema in the dev database:
+
 ```bash
-docker-compose exec php bin/console doctrine:fixtures:load
+docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 ```
-This command will load the test data into the database.
 
-###  3. Create a User
-   Create an initial user by running the following command:
+### 3. Generate JWT Keypair
+
+The admin panel uses JWT auth. Without keys, login will silently return an empty token.
+
 ```bash
-   docker-compose exec php bin/console app:create-user --email="sample@email.com" --password="supersecret"
+docker compose exec app php bin/console lexik:jwt:generate-keypair
 ```
-Replace sample@email.com and supersecret with your desired email and password.
 
-###  4. Access the Client Interface
-   You can access the client part of the application in your browser at:
-http://localhost:8080/
+The passphrase is read from `.env` (`JWT_PASSPHRASE`).
 
-### 5. Access the Admin Interface
-   To access the admin interface, open the following URL in your browser:
-http://localhost:8080/admin
+### 4. Load Fixtures
+
+```bash
+docker compose exec app php bin/console doctrine:fixtures:load --no-interaction
+```
+
+### 5. Create an Admin User
+
+```bash
+docker compose exec app php bin/console app:create-user --email="admin@example.com" --password="supersecret"
+```
+
+Replace email/password as you like — but note Chrome will refuse to save very weak passwords (e.g. `admin`).
+
+### 6. Open the App
+
+* Client:  http://localhost:8080/
+* Admin:   http://localhost:8080/admin
+
+## Running Tests
+
+The test suite runs against a separate `symfony_test` database. First-time setup:
+
+```bash
+# Create the test DB and grant access to the symfony user
+docker exec symfony_db mysql -uroot -proot -e \
+  "CREATE DATABASE IF NOT EXISTS symfony_test; \
+   GRANT ALL PRIVILEGES ON symfony_test.* TO 'symfony'@'%'; \
+   FLUSH PRIVILEGES;"
+
+# Create the schema in the test DB
+docker compose exec app php bin/console doctrine:schema:create --env=test
+```
+
+Then run all tests:
+
+```bash
+docker compose exec app php bin/phpunit
+```
 
 ## Additional Commands
-### Stop Docker Containers:
+
+### Stop containers
 ```bash
-docker-compose down
+docker compose down
 ```
 
-### View Docker Logs:
+### Stop and wipe DB volume
 ```bash
-docker-compose logs -f
+docker compose down -v
+```
+
+### Follow logs
+```bash
+docker compose logs -f
+```
+
+### Shell into the PHP container
+```bash
+docker exec -it symfony_app bash
+```
+
+### Clear Symfony cache
+```bash
+docker compose exec app php bin/console cache:clear
 ```
 
 ## Troubleshooting
-If you encounter any issues, make sure that:
 
-Docker and Docker Compose are properly installed and running.
-The Docker containers are correctly built and started.
-You are executing commands from the project root directory.
-For further assistance, please refer to the Symfony Documentation or contact the project maintainers.
+* **Login returns `{"token":""}`** — JWT keypair not generated. Run step 3.
+* **`Access denied for user 'symfony'@'%' to database 'symfony_test'`** — test DB not created yet. See the Running Tests section.
+* **`docker compose` not found** — older Docker installs use `docker-compose` (with a hyphen). Both work.
+* Ensure Docker is running and you are executing commands from the project root.
 
 ## Contact
 For any questions or suggestions, feel free to send a letter to Santa Claus.
 
-Happy coding!  🚀
+Happy coding!

@@ -45,8 +45,8 @@ const ArticleForm: React.FC = () => {
             setTitle(article.title);
             setShortDescription(article.shortDescription);
             setContent(article.content);
-            setImageId(article.image.id);
-            setImageFileName(article.image.fileName);
+            setImageId(article.image?.id ?? null);
+            setImageFileName(article.image?.fileName ?? null);
             setSelectedCategories(article.categories.map(category => category.id));
         }
     }, [article]);

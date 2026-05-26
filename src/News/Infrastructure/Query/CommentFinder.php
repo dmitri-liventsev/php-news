@@ -4,27 +4,33 @@ namespace App\News\Infrastructure\Query;
 
 use App\News\Application\Query\Finder\CommentFinderInterface;
 use App\News\Application\Query\Handler\DTO\CommentDTO;
-use App\News\Domain\Entity\Comment;
 use App\News\Domain\ValueObject\ArticleID;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\Connection;
 
+/**
+ * Read-side comment projector: plain DBAL, no ORM, no entity hydration.
+ */
 final readonly class CommentFinder implements CommentFinderInterface
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private Connection $connection)
     {
     }
 
     public function findByArticle(ArticleID $articleID): array
     {
-        $comments = $this->em->createQueryBuilder()
-            ->select('c')
-            ->from(Comment::class, 'c')
-            ->where('c.article = :articleID')
+        $rows = $this->connection->createQueryBuilder()
+            ->select('c.id, c.author, c.content')
+            ->from('comment', 'c')
+            ->where('c.article_id = :articleID')
+            ->andWhere('c.deleted_at IS NULL')
             ->setParameter('articleID', $articleID->value)
             ->orderBy('c.id', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->executeQuery()
+            ->fetchAllAssociative();
 
-        return array_map(fn(Comment $c) => new CommentDTO($c), $comments);
+        return array_map(
+            fn($r) => new CommentDTO((int) $r['id'], (string) $r['author'], (string) $r['content']),
+            $rows,
+        );
     }
 }

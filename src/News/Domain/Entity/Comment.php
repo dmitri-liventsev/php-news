@@ -3,13 +3,13 @@
 namespace App\News\Domain\Entity;
 
 use App\News\Domain\Event\CommentPosted;
-use App\News\Domain\Event\RecordsDomainEvents;
-use App\News\Domain\Event\RecordsDomainEventsTrait;
 use App\News\Domain\ValueObject\CommentAuthor;
 use App\News\Domain\ValueObject\CommentContent;
 use App\News\Domain\ValueObject\CommentID;
-use DateTime;
-use DateTimeInterface;
+use App\Shared\Domain\Event\RecordsDomainEvents;
+use App\Shared\Domain\Event\RecordsDomainEventsTrait;
+use App\Shared\Domain\SoftDeletable;
+use App\Shared\Domain\Timestamped;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -18,6 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Comment implements RecordsDomainEvents
 {
     use RecordsDomainEventsTrait;
+    use Timestamped;
+    use SoftDeletable;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
@@ -29,15 +31,6 @@ class Comment implements RecordsDomainEvents
 
     #[ORM\Column(type: 'text')]
     private string $content;
-
-    #[ORM\Column(name: 'created_at', type: 'datetime')]
-    private DateTimeInterface $createdAt;
-
-    #[ORM\Column(name: 'updated_at', type: 'datetime')]
-    private DateTimeInterface $updatedAt;
-
-    #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $deletedAt = null;
 
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(name: 'article_id', referencedColumnName: 'id')]
@@ -53,14 +46,11 @@ class Comment implements RecordsDomainEvents
      */
     public static function post(Article $article, CommentAuthor $author, CommentContent $content): self
     {
-        $now = new DateTime();
-
         $comment = new self();
         $comment->article = $article;
         $comment->author = $author->value;
         $comment->content = $content->value;
-        $comment->createdAt = $now;
-        $comment->updatedAt = $now;
+        $comment->initTimestamps();
 
         return $comment;
     }
@@ -68,15 +58,6 @@ class Comment implements RecordsDomainEvents
     public function edit(CommentContent $content): void
     {
         $this->content = $content->value;
-        $this->touch();
-    }
-
-    public function softDelete(): void
-    {
-        if ($this->deletedAt !== null) {
-            return;
-        }
-        $this->deletedAt = new DateTime();
         $this->touch();
     }
 
@@ -98,26 +79,6 @@ class Comment implements RecordsDomainEvents
     public function getArticle(): Article
     {
         return $this->article;
-    }
-
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function getDeletedAt(): ?DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    private function touch(): void
-    {
-        $this->updatedAt = new DateTime();
     }
 
     #[ORM\PostPersist]

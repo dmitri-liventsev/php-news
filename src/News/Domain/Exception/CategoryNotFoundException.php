@@ -3,6 +3,7 @@
 namespace App\News\Domain\Exception;
 
 use App\News\Domain\ValueObject\CategoryID;
+use App\Shared\Domain\Exception\EntityNotFoundException;
 
 final class CategoryNotFoundException extends EntityNotFoundException
 {

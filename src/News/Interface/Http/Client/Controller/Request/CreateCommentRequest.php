@@ -4,7 +4,7 @@ namespace App\News\Interface\Http\Client\Controller\Request;
 
 use App\News\Application\Command\CreateCommentCommand;
 use App\News\Domain\ValueObject\ArticleID;
-use App\News\Infrastructure\Util\Request\BaseRequest;
+use App\Shared\Infrastructure\Http\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;

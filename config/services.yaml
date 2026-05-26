@@ -20,6 +20,7 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/News/Domain/Entity/'
+            - '../src/Identity/Domain/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
@@ -28,6 +29,13 @@ services:
     command_handlers:
         namespace: App\News\Application\Command\Handler\
         resource: '%kernel.project_dir%/src/News/Application/Command/Handler/*Handler.php'
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    identity_command_handlers:
+        namespace: App\Identity\Application\Command\Handler\
+        resource: '%kernel.project_dir%/src/Identity/Application/Command/Handler/*Handler.php'
         autoconfigure: false
         tags:
             - { name: messenger.message_handler, bus: messenger.bus.default }
@@ -75,12 +83,12 @@ services:
     App\News\Domain\Repository\ImageRepositoryInterface:
         alias: App\News\Infrastructure\Repository\ImageRepository
 
-    App\News\Infrastructure\Repository\UserRepository:
+    App\Identity\Infrastructure\Repository\UserRepository:
         tags:
             - { name: 'doctrine.repository_service' }
 
-    App\News\Domain\Repository\UserRepositoryInterface:
-        alias: App\News\Infrastructure\Repository\UserRepository
+    App\Identity\Domain\Repository\UserRepositoryInterface:
+        alias: App\Identity\Infrastructure\Repository\UserRepository
 
     App\News\Application\Query\Finder\ArticleFinderInterface:
         alias: App\News\Infrastructure\Query\ArticleFinder
@@ -97,9 +105,9 @@ services:
         tags:
             - { name: 'console.command' }
 
-    App\News\Infrastructure\Serializer\CategoryIdNormalizer:
+    App\Shared\Infrastructure\Serializer\CollectionIdNormalizer:
         tags: [ 'serializer.normalizer' ]
 
-    App\News\Infrastructure\Util\Request\BaseRequestValueResolver:
+    App\Shared\Infrastructure\Http\Request\BaseRequestValueResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 200 }

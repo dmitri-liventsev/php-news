@@ -4,8 +4,8 @@ namespace App\News\Domain\Entity;
 
 use App\News\Domain\ValueObject\CategoryID;
 use App\News\Domain\ValueObject\CategoryTitle;
-use DateTime;
-use DateTimeInterface;
+use App\Shared\Domain\SoftDeletable;
+use App\Shared\Domain\Timestamped;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'category')]
 class Category
 {
+    use Timestamped;
+    use SoftDeletable;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
@@ -25,15 +28,6 @@ class Category
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories')]
     private Collection $articles;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime')]
-    private DateTimeInterface $createdAt;
-
-    #[ORM\Column(name: 'updated_at', type: 'datetime')]
-    private DateTimeInterface $updatedAt;
-
-    #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $deletedAt = null;
-
     private function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -41,12 +35,9 @@ class Category
 
     public static function create(CategoryTitle $title): self
     {
-        $now = new DateTime();
-
         $category = new self();
         $category->title = $title->value;
-        $category->createdAt = $now;
-        $category->updatedAt = $now;
+        $category->initTimestamps();
 
         return $category;
     }
@@ -54,15 +45,6 @@ class Category
     public function rename(CategoryTitle $title): void
     {
         $this->title = $title->value;
-        $this->touch();
-    }
-
-    public function softDelete(): void
-    {
-        if ($this->deletedAt !== null) {
-            return;
-        }
-        $this->deletedAt = new DateTime();
         $this->touch();
     }
 
@@ -82,25 +64,5 @@ class Category
     public function getArticles(): Collection
     {
         return $this->articles;
-    }
-
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function getDeletedAt(): ?DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    private function touch(): void
-    {
-        $this->updatedAt = new DateTime();
     }
 }

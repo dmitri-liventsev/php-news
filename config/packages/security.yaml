@@ -4,9 +4,7 @@ security:
 
   providers:
     users:
-      entity:
-        class: App\News\Domain\Entity\User
-        property: email
+      id: App\Identity\Infrastructure\Security\UserProvider
 
   firewalls:
     dev:

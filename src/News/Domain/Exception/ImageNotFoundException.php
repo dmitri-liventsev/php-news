@@ -3,6 +3,7 @@
 namespace App\News\Domain\Exception;
 
 use App\News\Domain\ValueObject\ImageID;
+use App\Shared\Domain\Exception\EntityNotFoundException;
 
 final class ImageNotFoundException extends EntityNotFoundException
 {

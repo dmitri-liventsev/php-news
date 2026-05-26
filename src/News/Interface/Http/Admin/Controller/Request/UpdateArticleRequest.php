@@ -4,7 +4,7 @@ namespace App\News\Interface\Http\Admin\Controller\Request;
 
 use App\News\Application\Command\UpdateArticleCommand;
 use App\News\Domain\ValueObject\ArticleID;
-use App\News\Infrastructure\Util\Request\BaseRequest;
+use App\Shared\Infrastructure\Http\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;

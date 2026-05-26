@@ -3,6 +3,7 @@
 namespace App\News\Application\Query\Finder;
 
 use App\News\Application\Query\Handler\DTO\CategoryPreviewDTO;
+use App\News\Application\Query\Handler\DTO\CategoryWithTopArticlesDTO;
 use App\News\Domain\ValueObject\CategoryID;
 
 interface CategoryFinderInterface
@@ -15,9 +16,9 @@ interface CategoryFinderInterface
     public function findAll(): array;
 
     /**
-     * Flat projection of categories with their top articles; used on the home page.
+     * Categories with their currently-promoted top articles; used on the home page.
      *
-     * @return array<int, array<string, mixed>>
+     * @return CategoryWithTopArticlesDTO[]
      */
     public function findCategoriesWithTopArticles(): array;
 }

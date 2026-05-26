@@ -3,6 +3,7 @@
 namespace App\News\Domain\Exception;
 
 use App\News\Domain\ValueObject\ArticleID;
+use App\Shared\Domain\Exception\EntityNotFoundException;
 
 final class ArticleNotFoundException extends EntityNotFoundException
 {

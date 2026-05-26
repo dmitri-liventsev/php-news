@@ -5,6 +5,7 @@ namespace App\News\Interface\Http\Admin\Controller;
 use App\News\Application\Command\DeleteCategoryCommand;
 use App\News\Application\Query\GetCategoriesQuery;
 use App\News\Application\Query\GetCategoryByIdQuery;
+use App\News\Domain\Exception\CategoryNotFoundException;
 use App\News\Domain\ValueObject\CategoryID;
 use App\News\Interface\Http\Admin\Controller\Request\CreateCategoryRequest;
 use App\News\Interface\Http\Admin\Controller\Request\UpdateCategoryRequest;
@@ -31,7 +32,7 @@ class AdminCategoryController extends AbstractController
         $category = $this->handle(new GetCategoryByIdQuery($categoryID));
 
         if (!$category) {
-            return new JsonResponse(['error' => 'Category not found'], Response::HTTP_NOT_FOUND);
+            throw CategoryNotFoundException::byId($categoryID);
         }
 
         return $this->json($category);

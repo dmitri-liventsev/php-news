@@ -6,6 +6,7 @@ use App\News\Application\Command\DeleteArticleCommand;
 use App\News\Application\Query\GetArticleByIdQuery;
 use App\News\Application\Query\GetArticlesQuery;
 use App\News\Domain\Entity\Image;
+use App\News\Domain\Exception\ArticleNotFoundException;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Interface\Http\Admin\Controller\Request\CreateArticleRequest;
 use App\News\Interface\Http\Admin\Controller\Request\CreateImageRequest;
@@ -29,11 +30,11 @@ class AdminArticleController extends AbstractController
 
     public function getArticle(int $article_id): JsonResponse
     {
-        $articleId = new ArticleID($article_id);
-        $article = $this->handle(new GetArticleByIdQuery($articleId));
+        $articleID = new ArticleID($article_id);
+        $article = $this->handle(new GetArticleByIdQuery($articleID));
 
         if (!$article) {
-            return new JsonResponse(['error' => 'Article not found'], Response::HTTP_NOT_FOUND);
+            throw ArticleNotFoundException::byId($articleID);
         }
 
         return $this->json($article);
@@ -41,12 +42,7 @@ class AdminArticleController extends AbstractController
 
     public function getArticles(int $page_id = 0): JsonResponse
     {
-        $query = new GetArticlesQuery($page_id);
-        $articles = $this->handle($query);
-
-        if (empty($articles)) {
-            return new JsonResponse(['error' => 'No articles found'], Response::HTTP_NOT_FOUND);
-        }
+        $articles = $this->handle(new GetArticlesQuery($page_id));
 
         return $this->json($articles);
     }

@@ -2,15 +2,11 @@
 
 namespace App\News\Application\Query\Handler\DTO;
 
-use App\News\Domain\Entity\Category;
-
-class CategoryPreviewDTO
+final class CategoryPreviewDTO
 {
-    public int $id;
-    public string $title;
-
-    public function __construct(Category $category = null) {
-        $this->id = $category?->getId()->value;
-        $this->title = $category?->getTitle()->value;
+    public function __construct(
+        public int $id,
+        public string $title,
+    ) {
     }
 }

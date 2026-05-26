@@ -6,8 +6,6 @@ use App\News\Domain\Event\ArticleCreated;
 use App\News\Domain\Event\ArticleMarkedAsTop;
 use App\News\Domain\Event\ArticleUnmarkedFromTop;
 use App\News\Domain\Event\ArticleViewed;
-use App\News\Domain\Event\RecordsDomainEvents;
-use App\News\Domain\Event\RecordsDomainEventsTrait;
 use App\News\Domain\ValueObject\ArticleContent;
 use App\News\Domain\ValueObject\ArticleID;
 use App\News\Domain\ValueObject\ArticleTitle;
@@ -15,8 +13,10 @@ use App\News\Domain\ValueObject\CommentAuthor;
 use App\News\Domain\ValueObject\CommentContent;
 use App\News\Domain\ValueObject\CommentID;
 use App\News\Domain\ValueObject\ShortDescription;
-use DateTime;
-use DateTimeInterface;
+use App\Shared\Domain\Event\RecordsDomainEvents;
+use App\Shared\Domain\Event\RecordsDomainEventsTrait;
+use App\Shared\Domain\SoftDeletable;
+use App\Shared\Domain\Timestamped;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +27,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Article implements RecordsDomainEvents
 {
     use RecordsDomainEventsTrait;
+    use Timestamped;
+    use SoftDeletable;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
@@ -60,15 +62,6 @@ class Article implements RecordsDomainEvents
     )]
     private Collection $categories;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime')]
-    private DateTimeInterface $createdAt;
-
-    #[ORM\Column(name: 'updated_at', type: 'datetime')]
-    private DateTimeInterface $updatedAt;
-
-    #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $deletedAt = null;
-
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $comments;
 
@@ -90,15 +83,12 @@ class Article implements RecordsDomainEvents
         ?Image $image,
         iterable $categories,
     ): self {
-        $now = new DateTime();
-
         $article = new self();
         $article->title = $title->value;
         $article->shortDescription = $shortDescription->value;
         $article->content = $content->value;
         $article->image = $image;
-        $article->createdAt = $now;
-        $article->updatedAt = $now;
+        $article->initTimestamps();
 
         foreach ($categories as $category) {
             if (!$article->categories->contains($category)) {
@@ -176,15 +166,6 @@ class Article implements RecordsDomainEvents
         }
     }
 
-    public function softDelete(): void
-    {
-        if ($this->deletedAt !== null) {
-            return;
-        }
-        $this->deletedAt = new DateTime();
-        $this->touch();
-    }
-
     public function addComment(CommentAuthor $author, CommentContent $content): Comment
     {
         $comment = Comment::post($this, $author, $content);
@@ -252,26 +233,6 @@ class Article implements RecordsDomainEvents
     public function getComments(): Collection
     {
         return $this->comments;
-    }
-
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function getDeletedAt(): ?DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    private function touch(): void
-    {
-        $this->updatedAt = new DateTime();
     }
 
     #[ORM\PostPersist]

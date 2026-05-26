@@ -16,7 +16,7 @@ App\News\Domain\Entity\Article:
       groups: ['article:read']
     categories:
       groups: ['article:read']
-      normalizer: App\News\Infrastructure\Serializer\CategoryIdNormalizer
+      normalizer: App\Shared\Infrastructure\Serializer\CollectionIdNormalizer
     createdAt:
       groups: ['article:read']
     updatedAt:

@@ -3,7 +3,7 @@
 namespace App\News\Interface\Http\Admin\Controller\Request;
 
 use App\News\Application\Command\CreateImageCommand;
-use App\News\Infrastructure\Util\Request\BaseRequest;
+use App\Shared\Infrastructure\Http\Request\BaseRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Image;

@@ -13,7 +13,8 @@ class GetArticlesHandler
 
     public function __invoke(GetArticlesQuery $query): array
     {
-        $offset = ($query->page - 1) * $query->limit;
+        $page = max(1, $query->page);
+        $offset = ($page - 1) * $query->limit;
 
         return $this->articleFinder->findRecentPage($query->limit, $offset);
     }

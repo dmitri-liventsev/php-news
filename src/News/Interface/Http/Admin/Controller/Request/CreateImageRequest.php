@@ -3,6 +3,7 @@
 namespace App\News\Interface\Http\Admin\Controller\Request;
 
 use App\News\Application\Command\CreateImageCommand;
+use App\Shared\Domain\ValueObject\BinaryFile;
 use App\Shared\Infrastructure\Http\Request\BaseRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,14 +28,13 @@ class CreateImageRequest extends BaseRequest
         ];
     }
 
-    public function getFile(): UploadedFile
-    {
-        return $this->file;
-    }
-
     public function toCommand(): CreateImageCommand
     {
-        return new CreateImageCommand($this->getFile());
+        return new CreateImageCommand(new BinaryFile(
+            contents: (string) file_get_contents($this->file->getPathname()),
+            originalName: $this->file->getClientOriginalName(),
+            mimeType: $this->file->getMimeType() ?? $this->file->getClientMimeType(),
+        ));
     }
 
     public function fillFromRequest(Request $http): void

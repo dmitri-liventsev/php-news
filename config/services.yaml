@@ -108,6 +108,11 @@ services:
     App\Shared\Infrastructure\Serializer\CollectionIdNormalizer:
         tags: [ 'serializer.normalizer' ]
 
+    App\News\Infrastructure\Serializer\ArticleDTONormalizer: ~
+
+    App\News\Infrastructure\Serializer\CategoryWithTopArticlesDTONormalizer: ~
+
+
     App\Shared\Infrastructure\Http\Request\BaseRequestValueResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 200 }

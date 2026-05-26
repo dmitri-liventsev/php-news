@@ -2,12 +2,12 @@
 
 namespace App\News\Application\Command;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Shared\Domain\ValueObject\BinaryFile;
 
 readonly class CreateImageCommand
 {
     public function __construct(
-        public UploadedFile $file,
+        public BinaryFile $file,
     ) {
     }
 }

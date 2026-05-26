@@ -2,13 +2,14 @@
 
 namespace App\News\Application\Query\Handler\DTO;
 
-use JsonSerializable;
-
 /**
  * Read-side projection used by the public home page (/api/top-news):
  * a category with the small list of its currently-promoted top articles.
+ *
+ * Pure data — serialization is handled at the HTTP boundary by a dedicated
+ * normalizer (CategoryWithTopArticlesDTONormalizer).
  */
-final class CategoryWithTopArticlesDTO implements JsonSerializable
+final readonly class CategoryWithTopArticlesDTO
 {
     /**
      * @param ArticleDTO[] $articles
@@ -18,14 +19,5 @@ final class CategoryWithTopArticlesDTO implements JsonSerializable
         public string $title,
         public array $articles,
     ) {
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'articles' => $this->articles,
-        ];
     }
 }

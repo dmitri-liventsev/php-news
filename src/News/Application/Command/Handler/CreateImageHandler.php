@@ -10,34 +10,29 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CreateImageHandler
 {
-    /**
-     * @var SluggerInterface
-     */
-    private SluggerInterface $slugger;
-
-    /**
-     * @var ImageRepositoryInterface
-     */
-    private ImageRepositoryInterface $imageRepository;
-
-    private string $imagesDirectory;
-
-    public function __construct(string $imagesDirectory, SluggerInterface $slugger, ImageRepositoryInterface $imageRepository) {
-        $this->slugger = $slugger;
-        $this->imageRepository = $imageRepository;
-        $this->imagesDirectory = $imagesDirectory;
+    public function __construct(
+        private readonly string $imagesDirectory,
+        private readonly SluggerInterface $slugger,
+        private readonly ImageRepositoryInterface $imageRepository,
+    ) {
     }
 
     public function __invoke(CreateImageCommand $command): Image
     {
-        $originalFilename = pathinfo($command->file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = $this->slugger->slug($originalFilename);
-        $newFilename = $safeFilename . '-' . uniqid() . '.' . $command->file->guessExtension();
+        $file = $command->file;
+        $safeStem = $this->slugger->slug($file->basename());
+        $extension = $file->extension() !== '' ? '.' . $file->extension() : '';
+        $newFilename = $safeStem . '-' . uniqid() . $extension;
 
-        $command->file->move($this->imagesDirectory, $newFilename);
+        if (!is_dir($this->imagesDirectory) && !mkdir($this->imagesDirectory, 0775, true) && !is_dir($this->imagesDirectory)) {
+            throw new \RuntimeException(sprintf('Unable to create images directory "%s".', $this->imagesDirectory));
+        }
+
+        if (file_put_contents($this->imagesDirectory . '/' . $newFilename, $file->contents) === false) {
+            throw new \RuntimeException(sprintf('Failed to write image to "%s".', $this->imagesDirectory));
+        }
 
         $image = Image::create(new ImageFileName($newFilename));
-
         $this->imageRepository->save($image);
 
         return $image;

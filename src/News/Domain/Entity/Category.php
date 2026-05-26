@@ -59,9 +59,9 @@ class Category
     }
 
     /**
-     * @return Collection<int, Article>
+     * @return iterable<Article>
      */
-    public function getArticles(): Collection
+    public function getArticles(): iterable
     {
         return $this->articles;
     }

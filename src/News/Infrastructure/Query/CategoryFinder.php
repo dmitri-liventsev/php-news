@@ -92,21 +92,18 @@ final readonly class CategoryFinder implements CategoryFinderInterface
             array_values(array_unique(array_map(fn($r) => (int) $r['article_id'], $rows))),
         );
 
-        $result = [];
+        $categoryTitle = [];
+        $articlesByCategory = [];
         foreach ($rows as $row) {
             $catId = (int) $row['category_id'];
-            $result[$catId] ??= new CategoryWithTopArticlesDTO(
-                id: $catId,
-                title: (string) $row['category_title'],
-                articles: [],
-            );
+            $categoryTitle[$catId] ??= (string) $row['category_title'];
 
             $image = null;
             if ($row['image_id'] !== null) {
                 $image = ['id' => (int) $row['image_id'], 'fileName' => (string) $row['image_file_name']];
             }
 
-            $result[$catId]->articles[] = new ArticleDTO(
+            $articlesByCategory[$catId][] = new ArticleDTO(
                 id: (int) $row['article_id'],
                 title: (string) $row['article_title'],
                 shortDescription: (string) $row['article_short_description'],
@@ -121,7 +118,15 @@ final readonly class CategoryFinder implements CategoryFinderInterface
             );
         }
 
-        return array_values($result);
+        $result = [];
+        foreach ($categoryTitle as $catId => $title) {
+            $result[] = new CategoryWithTopArticlesDTO(
+                id: $catId,
+                title: $title,
+                articles: $articlesByCategory[$catId] ?? [],
+            );
+        }
+        return $result;
     }
 
     /**

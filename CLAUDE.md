@@ -19,7 +19,8 @@ src/
 │   │   ├── Event/                  RecordsDomainEvents interface + trait; DomainEvent interface + AbstractDomainEvent base (eventId, occurredOn).
 │   │   ├── Exception/              EntityNotFoundException, DomainConflictException (abstract bases).
 │   │   ├── Timestamped.php         Trait: createdAt/updatedAt + initTimestamps()/touch().
-│   │   └── SoftDeletable.php       Trait: deletedAt + isDeleted()/softDelete() (idempotent; auto-touches if Timestamped is also used).
+│   │   ├── SoftDeletable.php       Trait: deletedAt + isDeleted()/softDelete() (idempotent; auto-touches if Timestamped is also used).
+│   │   └── ValueObject/BinaryFile  Framework-neutral upload VO (contents + originalName + mimeType); built at boundary, used by commands/handlers.
 │   └── Infrastructure/
 │       ├── Doctrine/               DomainEventDispatcher (onFlush/postFlush), SoftDeleteFilter.
 │       ├── Exception/              EntityNotFoundListener (→404), DomainConflictListener (→409).
@@ -94,7 +95,7 @@ Controllers and CLI use `HandleTrait` + `MessageBusInterface` and call `$this->h
 ### Write vs read separation
 
 - **Write side**: `Domain/Repository/*RepositoryInterface` — returns full aggregates (`Article`, `Comment`, …) used by command handlers. Implementations extend Doctrine `ServiceEntityRepository`.
-- **Read side**: `Application/Query/Finder/*FinderInterface` — returns flat `*DTO`s (`ArticleDTO`, `CategoryPreviewDTO`, `CategoryWithTopArticlesDTO`, …). Implementations in `Infrastructure/Query/` use **plain Doctrine DBAL** — no ORM, no entity hydration. DTOs take primitives via constructor (`new ArticleDTO(id: …, title: …, …)`).
+- **Read side**: `Application/Query/Finder/*FinderInterface` — returns flat `*DTO`s (`ArticleDTO`, `CategoryPreviewDTO`, `CategoryWithTopArticlesDTO`, …). Implementations in `Infrastructure/Query/` use **plain Doctrine DBAL** — no ORM, no entity hydration. DTOs take primitives via constructor (`new ArticleDTO(id: …, title: …, …)`); they're `final readonly class` plain data — no `JsonSerializable`. JSON marshaling happens at the HTTP boundary via dedicated `*DTONormalizer` services in `News/Infrastructure/Serializer/`.
 
 Don't return entities from query handlers. Don't import `EntityManagerInterface` or any `Domain\Entity\*` class from `Infrastructure/Query/` — that surface uses `Doctrine\DBAL\Connection` only.
 

@@ -2,13 +2,11 @@
 
 namespace App\News\Application\Query\Handler\DTO;
 
-use JsonSerializable;
-
 /**
- * Read-side projection of an article. Constructed by ArticleFinder from a flat
- * DBAL row — it does NOT know about the Article aggregate.
+ * Read-side projection of an article. Pure data — serialization is handled at
+ * the HTTP boundary by ArticleDTONormalizer.
  */
-final class ArticleDTO implements JsonSerializable
+final readonly class ArticleDTO
 {
     /**
      * @param array{id: int, fileName: string}|null            $image
@@ -27,19 +25,5 @@ final class ArticleDTO implements JsonSerializable
         public string $updatedAt,
         public ?string $deletedAt = null,
     ) {
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'shortDescription' => $this->shortDescription,
-            'content' => $this->content,
-            'image' => $this->image,
-            'numberOfViews' => $this->numberOfViews,
-            'isTop' => $this->isTop,
-            'categories' => $this->categories,
-        ];
     }
 }

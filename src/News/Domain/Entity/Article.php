@@ -220,17 +220,17 @@ class Article implements RecordsDomainEvents
     }
 
     /**
-     * @return Collection<int, Category>
+     * @return iterable<Category>
      */
-    public function getCategories(): Collection
+    public function getCategories(): iterable
     {
         return $this->categories;
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @return iterable<Comment>
      */
-    public function getComments(): Collection
+    public function getComments(): iterable
     {
         return $this->comments;
     }

@@ -75,6 +75,13 @@ services:
     App\News\Domain\Repository\ImageRepositoryInterface:
         alias: App\News\Infrastructure\Repository\ImageRepository
 
+    App\News\Infrastructure\Repository\UserRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\News\Domain\Repository\UserRepositoryInterface:
+        alias: App\News\Infrastructure\Repository\UserRepository
+
     App\News\Application\Query\Finder\ArticleFinderInterface:
         alias: App\News\Infrastructure\Query\ArticleFinder
 

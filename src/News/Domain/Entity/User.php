@@ -2,64 +2,94 @@
 
 namespace App\News\Domain\Entity;
 
-namespace App\News\Domain\Entity;
-
+use App\News\Domain\Event\RecordsDomainEvents;
+use App\News\Domain\Event\RecordsDomainEventsTrait;
+use App\News\Domain\Event\UserRegistered;
+use App\News\Domain\ValueObject\Email;
+use App\News\Domain\ValueObject\HashedPassword;
+use App\News\Domain\ValueObject\Role;
+use App\News\Domain\ValueObject\UserID;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\HasLifecycleCallbacks]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, RecordsDomainEvents
 {
+    use RecordsDomainEventsTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    private ?string $email = null;
+    private string $email;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\Column(type: 'string')]
-    private ?string $password = null;
+    private string $password;
 
-    public function getId(): ?int
+    private function __construct()
     {
-        return $this->id;
     }
 
-    public function getEmail(): ?string
+    public static function register(Email $email, HashedPassword $password): self
     {
-        return $this->email;
+        $user = new self();
+        $user->email = $email->value;
+        $user->password = $password->value;
+        $user->roles = [];
+
+        return $user;
     }
 
-    public function setEmail(string $email): self
+    public function changePassword(HashedPassword $password): void
     {
-        $this->email = $email;
-        return $this;
+        $this->password = $password->value;
+    }
+
+    public function grantRole(Role $role): void
+    {
+        if (in_array($role->value, $this->roles, true)) {
+            return;
+        }
+        $this->roles[] = $role->value;
+    }
+
+    public function revokeRole(Role $role): void
+    {
+        $this->roles = array_values(array_filter(
+            $this->roles,
+            static fn(string $r) => $r !== $role->value,
+        ));
+    }
+
+    public function getId(): ?UserID
+    {
+        return $this->id ? new UserID($this->id) : null;
+    }
+
+    public function getEmail(): Email
+    {
+        return new Email($this->email);
     }
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return $this->email;
     }
 
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = Role::USER->value;
 
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-        return $this;
+        return array_values(array_unique($roles));
     }
 
     public function getPassword(): string
@@ -67,15 +97,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-        return $this;
-    }
-
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+    }
+
+    #[ORM\PostPersist]
+    public function onPersisted(): void
+    {
+        $id = $this->getId();
+        if ($id === null) {
+            return;
+        }
+        $this->recordThat(new UserRegistered($id, $this->getEmail()));
     }
 }

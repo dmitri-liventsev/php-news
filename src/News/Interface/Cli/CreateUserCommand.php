@@ -2,53 +2,66 @@
 
 namespace App\News\Interface\Cli;
 
+use App\News\Application\Command\RegisterUserCommand;
 use App\News\Domain\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\News\Domain\Exception\EmailAlreadyTakenException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Messenger\HandleTrait;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
+#[AsCommand(name: 'app:create-user', description: 'Creates a new user.')]
 class CreateUserCommand extends Command
 {
-    protected static $defaultName = 'app:create-user';
+    use HandleTrait;
 
-    public static function getDefaultName(): ?string {
-        return self::$defaultName;
-    }
-
-    private EntityManagerInterface $em;
-    private UserPasswordHasherInterface $passwordEncoder;
-
-    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordEncoder)
-    {
-        $this->em = $em;
-        $this->passwordEncoder = $passwordEncoder;
+    public function __construct(
+        MessageBusInterface $messageBus,
+        private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
+    ) {
+        $this->messageBus = $messageBus;
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setDescription('Creates a new user.')
             ->addOption('email', null, InputOption::VALUE_REQUIRED, 'The email of the user')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password of the user');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $email = $input->getOption('email');
-        $password = $input->getOption('password');
+        $io = new SymfonyStyle($input, $output);
 
-        $user = new User();
-        $user->setEmail($email);
-        $user->setPassword($this->passwordEncoder->hashPassword($user, $password));
+        $email = (string) $input->getOption('email');
+        $password = (string) $input->getOption('password');
 
-        $this->em->persist($user);
-        $this->em->flush();
+        if ($email === '' || $password === '') {
+            $io->error('Both --email and --password are required.');
+            return Command::INVALID;
+        }
 
-        $output->writeln('User created successfully!');
+        $hashed = $this->passwordHasherFactory->getPasswordHasher(User::class)->hash($password);
+
+        try {
+            $this->handle(new RegisterUserCommand($email, $hashed));
+        } catch (HandlerFailedException $e) {
+            $previous = $e->getPrevious() ?? $e;
+            if ($previous instanceof EmailAlreadyTakenException) {
+                $io->error($previous->getMessage());
+                return Command::FAILURE;
+            }
+            throw $e;
+        }
+
+        $io->success('User created successfully!');
 
         return Command::SUCCESS;
     }

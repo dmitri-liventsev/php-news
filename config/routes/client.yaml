@@ -27,3 +27,15 @@ post_comment:
   path: /api/article/{article_id}/comments
   controller: App\News\Interface\Http\Client\Controller\CommentController::postComment
   methods: ['POST']
+
+# Mudimind: get free massage spots
+mudimind_get_free_spots:
+  path: /api/mudimind/free-spots
+  controller: App\Mudimind\Interface\Http\Client\BookController::getFreeSpots
+  methods: ['GET']
+
+# Mudimind: book a massage time
+mudimind_book_time:
+  path: /api/mudimind/book
+  controller: App\Mudimind\Interface\Http\Client\BookController::bookTime
+  methods: ['POST']

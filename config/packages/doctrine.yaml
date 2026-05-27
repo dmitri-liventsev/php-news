@@ -26,6 +26,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Identity/Domain/Entity'
                 prefix: 'App\Identity\Domain\Entity'
                 alias: AppIdentity
+            AppMudimind:
+                type: attribute
+                dir: '%kernel.project_dir%/src/Mudimind/Domain/Entity'
+                prefix: 'App\Mudimind\Domain\Entity'
+                alias: AppMudimind
         controller_resolver:
             auto_mapping: false
         filters:

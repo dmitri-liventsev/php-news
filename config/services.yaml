@@ -21,6 +21,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/News/Domain/Entity/'
             - '../src/Identity/Domain/Entity/'
+            - '../src/Mudimind/Domain/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
@@ -51,6 +52,20 @@ services:
     query_handlers:
         namespace: App\News\Application\Query\Handler\
         resource: '%kernel.project_dir%/src/News/Application/Query/Handler/*Handler.php'
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    mudimind_command_handlers:
+        namespace: App\Mudimind\Application\Command\Handler\
+        resource: '%kernel.project_dir%/src/Mudimind/Application/Command/Handler/*Handler.php'
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, bus: messenger.bus.default }
+
+    mudimind_query_handlers:
+        namespace: App\Mudimind\Application\Query\Handler\
+        resource: '%kernel.project_dir%/src/Mudimind/Application/Query/Handler/*Handler.php'
         autoconfigure: false
         tags:
             - { name: messenger.message_handler, bus: messenger.bus.default }
@@ -98,6 +113,30 @@ services:
 
     App\News\Application\Query\Finder\CommentFinderInterface:
         alias: App\News\Infrastructure\Query\CommentFinder
+
+    App\Mudimind\Infrastructure\Repository\MasseurRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\Mudimind\Domain\Repository\MasseurRepositoryInterface:
+        alias: App\Mudimind\Infrastructure\Repository\MasseurRepository
+
+    App\Mudimind\Infrastructure\Repository\ClientRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\Mudimind\Domain\Repository\ClientRepositoryInterface:
+        alias: App\Mudimind\Infrastructure\Repository\ClientRepository
+
+    App\Mudimind\Infrastructure\Repository\BookRepository:
+        tags:
+            - { name: 'doctrine.repository_service' }
+
+    App\Mudimind\Domain\Repository\BookRepositoryInterface:
+        alias: App\Mudimind\Infrastructure\Repository\BookRepository
+
+    App\Mudimind\Application\Query\Finder\FreeSpotFinderInterface:
+        alias: App\Mudimind\Infrastructure\Query\FreeSpotFinder
 
     App\News\Interface\Cli\SendTopWeeklyArticlesCommand:
         arguments:
